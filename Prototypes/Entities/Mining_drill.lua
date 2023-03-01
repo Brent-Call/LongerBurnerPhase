@@ -297,7 +297,7 @@ data:extend({
 	energy_usage = "450kW",
 	monitor_visualization_tint = { r = 78, g = 173, b = 255 },
 	fast_replaceable_group = "mining-drill",
-	resource_searching_radius = 2.99,
+	resource_searching_radius = 3.99,
 	vector_to_place_result = { -0.5, -2.25 },
 	
 	allowed_effects = { "consumption", "speed", "productivity", "pollution" },
@@ -306,7 +306,7 @@ data:extend({
 	--The base productivity is 3% if the setting is enabled instead.
 	base_productivity = 0.08,
 	
-	--The drill is 4�4, and its radius is 6�6.
+	--The drill is 4x4, and its radius is 8x8.
 	radius_visualisation_picture =
 	{
 		filename = "__base__/graphics/entity/electric-mining-drill/electric-mining-drill-radius-visualization.png",
