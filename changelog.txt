@@ -1,0 +1,135 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.2.3
+Date: 18. 12. 2020
+  Changes:
+    - Updated for Factorio version 1.1.
+  Balancing:
+    - Burner Automation technology doesn't cost any more in marathon mode--this helps to set up production quicker.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.2
+Date: 04. 07. 2020
+  Changes:
+    - Changed the default setting for the option of module slots in burner machines.  Now it is disabled by default.
+  Bugfixes:
+    - Fixed that since the electric mining drill update, the Advanced Burner Mining drill wouldn't show the proper graphics when it was mining with a fluid.  Now it's fixed, & it shows the proper graphics.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.1
+Date: 27. 06. 2020
+  Changes:
+    - The mod now uses a script to help automatically add Automation Science Pack as a prerequisite to any technologies that need it.
+    - The recipes for Burner Oil Refinery & Burner Chemical Plant now take the same time to craft as their electric counterparts.  They take the same amount of time in normal mode & marathon mode.
+  Minor Features:
+    - The Air Filter recipe now has an emissions multiplier of 0.7.
+    - Added better compatibility with the Simple Silicon mod & the Burner Offshore Pump mod.
+  Bugfixes:
+    - Fixed that the icon for the Burner Pumpjack was the wrong size in belts and chests.
+    - Automation 3 technology now requires Automation 2 & Lubricant technologies.
+    - The Special Power Armor item from the MilitarySupply scenario now has the "hidden" flag so that it doesn't appear in item selection GUIs anymore.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.0 - Factorio version 0.18
+Date: 09. 06. 2020
+  Changes:
+    - Updated for Factorio version 0.18.
+    - MilitarySupply scenario: the stone brick recipe is now unlocked at the start.
+  Minor Features:
+    - MilitarySupply scenario now has a description & a preview image.
+  Bugfixes:
+    - Electric Engine technology no longer has the redundant prerequisite of Electronics.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.6
+Date: 09. 06. 2020
+  Bugfixes:
+    - Fixed another bug with the HR graphics.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.5
+Date: 06. 08. 2019
+  Bugfixes:
+    - Attempt to fix a bug with the HR graphics.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.4 - Factorio version 0.17.60 (oil changes)
+Date: 01. 08. 2019
+  Balancing:
+    - Lubricant technology reverted to how it is in vanilla.
+    - Rocket Fuel technology reverted to how it is in vanilla.
+    - Burner Oil processing technology no longer unlocks solid fuel from light & heavy oils.  These recipes are gated behind the chemical science pack now, just like how it is in vanilla.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.3
+Date: 16. 07. 2019
+  Major Features:
+    - Eco-Chemical Plant: does not produce pollution & has lower energy consumption.
+  Minor Features:
+    - Advanced Burner Mining Drills now have a base productivity bonus. (Since Factorio version 0.17.57)
+  Balancing:
+    - Machines added by this mod now have stack sizes that match vanilla.
+  Bugfixes:
+    - All types of chemical plants are now fast-replaceable with each other.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.2
+Date: 05. 07. 2019
+  Bugfixes:
+    - Burner Inserters do not pollute, and never did.  The game engine never supported it, and still doesn't.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 29. 06. 2019
+  Major Features:
+    - MilitarySupply: now has a scoring system!  Can you beat your highscore?
+  Minor Features:
+    - There is now a setting to enable module slots in higher-tier burner machines.
+    - The Stack Inserter technology also unlocks a way to dismantle Burner Inserters to obtain about 60% of their original cost.  Also available in the MilitarySupply scenario upon purchasing the Fast Inserters upgrade.
+    - MilitarySupply: the character's thoughts are now color-coded
+    - MilitarySupply: added some text that displays the number of times the player died, if at least 1.  Also added text for when the player bought everything from the shop.
+    - MilitarySupply: whenever the player earns money from completing goals, flying text appears showing the amount of money earned.
+    - MilitarySupply: added a special upgrade if you are using one of my other mods.
+  Changes:
+    - Many burner entities now take the same amount of time to remove as their electric counterparts.
+    - Changed a few of the inner workings of this mod.  You shouldn't notice a difference.
+    - The Burner Assembling Machine 2 can no longer perform advanced-crafting recipes.
+  Balancing:
+    - Burner Oil Refinery now creates 8 pollution, up from whatever value it was before.
+    - Burner Chemical Plant now creates 5 pollution, up from whatever value it was before.
+    - Burner Inserter now creates 0.12 pollution, down from the value it had before.
+    - Burner Pumpjack now consumes 150kW & creates 12 pollution, both increased from previous values.  Now the stats match those of the Burner Mining Drill.
+    - Burner Assembling Machine 2 can now handle 2 ingredients instead of 1.
+    - MilitarySupply: since the Burner Assembling Machine 2 can now handle more ingredients, there is no need for the electric Assembling Machine 2 to be made available; therefore it is removed.
+    - MilitarySupply: choosing the Combat Starter Package now grants an armor that does not increase player inventory size.
+  Bugfixes:
+    - MilitarySupply: the chests now have shadows & they appear on the map now as white squares.
+    - MilitarySupply: fixed: the scenario didn't properly register player death.  Also, now updates the clock instantly when the player dies
+    - MilitarySupply: It was possible to crash the game by selecting the Production Starter Package while dead.  Now it no longer causes a crash.
+    - MilitarySupply: fixed some typos
+    - Fixed: Advanced Electronics tech now requires Logistic Science Pack
+  Scripting:
+    - Now using script areas in the implementation of the MilitarySupply scenario.  You shouldn't notice a difference.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0 - Factorio version 0.17
+Date: 07. 03. 2019
+  Minor Features:
+    - All versions of pumpjack, oil refinery, & chemical plant are fast-replaceable with each other now.
+  Balancing:
+    - Burner Assembling Machine 3 outputs less pollution.  It does have an air filter, after all.
+    - Electric Assembling Machine 3 now requires 60 units of lubricant to craft.
+    - Splitter requires more copper to craft if using Expensive Mode.
+    - In the MilitarySupply scenario, you lose 1 hour each time you die, not 30 minutes.
+  Changes:
+    - Updated for Factorio version 0.17.
+    - Added a changelog & a thumbnail.
+    - A lot of technologies & prerequisites were changed.
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0 - Initial release
+Date: 01. 12. 2018
+  Major Features:
+    - New Burner Assembling Machines: 3 tiers; Tier 2 is compact & very fast but has a limited recipe set.
+    - Advanced Burner Mining Drill: has lower pollution output, slightly larger area, extreme speed, & can mine Uranium Ore.
+    - Burner variants of the Oil Refinery & Chemical Plant.
+    - Burner Laboratory & 2 new types of Science Packs: for researching some new technologies.
+    - Eco-Assembling Machine: does not produce pollution & has lower energy consumption.
+    - Air Filters: intermediate product used in higher tier burner devices.
+    - 3 new Achievements.
+    - A new scenario: MilitarySupply!  Provide resources to the empire!
+  Minor Features:
+    - ALL burner (chemical fuel) devices now pollute--except trains!  Because Locomotives have air filters now.
+    - Burner Inserters now move at the same speed as regular Inserters.  Now they can keep up with fast belts.
+    - A couple of changes to early-game recipes.
+    - There's an option to prevent burner devices from connecting to the Circuit Network.
+    - The pump (for fluids) now requires electric Engine Units because they are powered by electricity.
+    - Rearranged & redid a lot of early-game techs.
