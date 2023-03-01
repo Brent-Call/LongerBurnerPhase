@@ -1,9 +1,10 @@
+---------------------------------------------------------------------------------------------------
 Version: 1.2.4
 Date: 01. 03. 2023
   Balancing:
     - Increased mining radius of advanced burner mining drill to make building new mining setups easier.  This may break existing mining setups if you have mixed ores.
   Changes:
-    - MilitarySupply: research is now disabled for all forces, not just the player.  I expect this never to be relevant.
+    - MilitarySupply: Research is now disabled for all forces, not just the player's force.  I expect this never to be relevant.
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 18. 12. 2020
