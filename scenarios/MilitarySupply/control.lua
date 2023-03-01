@@ -262,11 +262,16 @@ script.on_init( function()
 	game.surfaces[ 1 ].ticks_per_day = game.surfaces[ 1 ].ticks_per_day * 2
 	
 	set_next_message_of_scenario_object( mS, 60, "thoughts-initial1" )
+
+	--Disable research for all forces.
+	--I assume that no new forces are going to be created partway through the scenario.
+	for _, v in pairs( game.forces ) do
+		v.disable_research()
+	end
 end )
 
 script.on_event( defines.events.on_player_created, function( event )
 	local player = game.players[ event.player_index ]
-	player.force.disable_research()
 	
 	player.gui.left.style = "military-supply-flow"
 	
