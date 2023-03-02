@@ -1,3 +1,7 @@
+--The name of the top-level LuaGuiElement for the scoring GUI:
+SCORING_GUI_TOP_LEVEL_NAME = "MilitarySupply:scoring"
+CLOSE_BUTTON_FOR_SCORING_GUI = "totally-unique-string-{a9b462b5-836e-4d5e-ae5a-37bdf046450a}"
+
 function show_goal( player )
 	if not player.gui.left.goal then
 		player.gui.left.add{ type = "frame", name = "goal", caption = { "military-supply-scenario-goals-GUI.goal-count", global.goalManager.goalsCompleted }, direction = "vertical" }
@@ -138,29 +142,51 @@ function hide_shop_GUI( player )
 	end
 end
 
+--Gets the LocalisedString to be used as the title for the scoring GUI.
+--@return	A LocalisedString object with data from the most recent tick update.
+function get_caption_for_scoring_GUI()
+	return { "military-supply-scenario-score.current-score", string.format( "%.3f", global.scoreManager.finalScore )}
+end
+
 function show_score_GUI( player )
 	--First, calculate the score:
 	calculate_score_manager_object( global.scoreManager )
 	
-	local score = player.gui.center.add{ type = "frame", name = "score", direction = "vertical", caption = { "military-supply-scenario-score.current-score", string.format( "%.3f", global.scoreManager.finalScore )}}
+	local score = player.gui.screen.add{ type = "frame", name = SCORING_GUI_TOP_LEVEL_NAME, direction = "vertical" }
 	player.opened = score
+	score.force_auto_center()
+
+	local titlebar = score.add{ type = "flow", name = "scoring-titlebar", direction = "horizontal" }
+	titlebar.drag_target = score
+	titlebar.add{ type = "label", name = "scoring-titlebar-title", caption = get_caption_for_scoring_GUI(), ignored_by_interaction = true, style = "frame_title" }
+	titlebar.add{ type = "empty-widget", name = "scoring-titlebar-draggable", ignored_by_interaction = true, style = "draggable_space_header" }
+	titlebar[ "scoring-titlebar-draggable" ].style.height = 24
+	titlebar[ "scoring-titlebar-draggable" ].style.horizontally_stretchable = true
+	titlebar.add{ type = "sprite-button", name = CLOSE_BUTTON_FOR_SCORING_GUI, sprite = "utility/close_white", hovered_sprite = "utility/close_black", clicked_sprite = "utility/close_black", style = "close_button" }
 	
-	score.add{ type = "label", name = "description", caption = { "military-supply-scenario-score.description" }}.style.single_line = false
-	score.add{ type = "flow", name = "breakdown", direction = "horizontal" }.style.horizontal_spacing = 16
+	score.add{ type = "label", name = "description", caption = { "military-supply-scenario-score.description" }, style = "info_label" }
+	score.description.style.single_line = false
+	score.add{ type = "flow", name = "breakdown", direction = "horizontal", style = "centering_horizontal_flow" }
 	
 	local breakdown = score.breakdown
+	breakdown.style.horizontal_spacing = 16
+	breakdown.style.horizontally_stretchable = true
 	
-	breakdown.add{ type = "frame", name = "subscores", direction = "vertical" }
+	breakdown.add{ type = "frame", name = "subscores", direction = "vertical", style = "inside_shallow_frame_with_padding" }
+	breakdown.subscores.style.horizontally_stretchable = false
 	breakdown.subscores.add{ type = "label", name = "points-from-goals", caption = { "military-supply-scenario-score.pfg", global.scoreManager.pointsFromGoals }, tooltip = { "military-supply-scenario-score.pfg-tooltip" }}
 	breakdown.subscores.add{ type = "label", name = "points-from-time", caption = { "military-supply-scenario-score.pft", string.format( "%.1f", global.scoreManager.pointsFromTime )}, tooltip = { "military-supply-scenario-score.pft-tooltip" }}
 	breakdown.subscores.add{ type = "label", name = "points-from-upgrades", caption = { "military-supply-scenario-score.pfu", string.format( "%.3f", global.scoreManager.pointsFromUpgrades )}, tooltip = { "military-supply-scenario-score.pfu-tooltip" }}
-	breakdown.add{ type = "frame", name = "multis", direction = "vertical" }
+	breakdown.add{ type = "frame", name = "multis", direction = "vertical", style = "inside_shallow_frame_with_padding" }
+	breakdown.multis.style.horizontally_stretchable = false
 	breakdown.multis.add{ type = "label", name = "raw-total", caption = { "military-supply-scenario-score.rt", string.format( "%.3f", global.scoreManager.rawTotal )}, tooltip = { "military-supply-scenario-score.rt-tooltip" }}
 	breakdown.multis.add{ type = "label", name = "divisor-from-deaths", caption = { "military-supply-scenario-score.dfd", global.scoreManager.divisorFromDeaths }, tooltip = { "military-supply-scenario-score.dfd-tooltip", global.militarySupplyScenario.playerDeaths }}
 	breakdown.multis.add{ type = "label", name = "score-multiplier", caption = { "military-supply-scenario-score.sm", global.scoreManager.multiplier }, tooltip = { "military-supply-scenario-score.sm-tooltip" }}
 	
-	score.add{ type = "label", name = "current-score", caption = { "military-supply-scenario-score.current-score", string.format( "%.3f", global.scoreManager.finalScore )}}
-	
+	score.add{ type = "flow", name = "final-box", style = "centering_horizontal_flow" }
+	score[ "final-box" ].style.horizontally_stretchable = true
+	score[ "final-box" ].add{ type = "label", name = "final", caption = get_caption_for_scoring_GUI(), style = "heading_1_label" }
+
 	if global.goalManager.goalsCompleted >= 30 then
 		breakdown.subscores[ "points-from-goals" ].tooltip = { "military-supply-scenario-score.pfg-tooltip-2" }
 	end
@@ -168,11 +194,11 @@ end
 
 --This function does NOT recalculate the score!
 function update_score_GUI( player )	
-	local score = player.gui.center.score
+	local score = player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ]
 	if score then
 		local breakdown = score.breakdown
 		
-		score.caption = { "military-supply-scenario-score.current-score", string.format( "%.3f", global.scoreManager.finalScore )}
+		score[ "scoring-titlebar" ][ "scoring-titlebar-title" ].caption = get_caption_for_scoring_GUI()
 		breakdown.subscores[ "points-from-goals" ].caption = { "military-supply-scenario-score.pfg", global.scoreManager.pointsFromGoals }
 		breakdown.subscores[ "points-from-time" ].caption = { "military-supply-scenario-score.pft", string.format( "%.1f", global.scoreManager.pointsFromTime )}
 		breakdown.subscores[ "points-from-upgrades" ].caption = { "military-supply-scenario-score.pfu", string.format( "%.3f", global.scoreManager.pointsFromUpgrades )}
@@ -180,8 +206,7 @@ function update_score_GUI( player )
 		breakdown.multis[ "divisor-from-deaths" ].caption = { "military-supply-scenario-score.dfd", global.scoreManager.divisorFromDeaths }
 		breakdown.multis[ "divisor-from-deaths" ].tooltip = { "military-supply-scenario-score.dfd-tooltip", global.militarySupplyScenario.playerDeaths }
 		breakdown.multis[ "score-multiplier" ].caption = { "military-supply-scenario-score.sm", global.scoreManager.multiplier }
-		score[ "current-score" ].caption = { "military-supply-scenario-score.current-score", string.format( "%.3f", global.scoreManager.finalScore )}
-		
+		score[ "final-box" ].final.caption = get_caption_for_scoring_GUI()
 		
 		if global.goalManager.goalsCompleted >= 30 then
 			breakdown.subscores[ "points-from-goals" ].tooltip = { "military-supply-scenario-score.pfg-tooltip-2" }
@@ -190,8 +215,9 @@ function update_score_GUI( player )
 end
 
 function hide_score_GUI( player )
-	if player.gui.center.score then
-		player.gui.center.score.destroy()
+	local score = player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ]
+	if score then
+		score.destroy()
 	end
 end
 

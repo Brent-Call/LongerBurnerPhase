@@ -396,8 +396,7 @@ script.on_nth_tick( 60, function( event )
 end )
 
 script.on_event( defines.events.on_gui_click, function( event )
-	--Create some local variables:
-	local button = event.element
+	--Create some local variables:\
 	local player = game.players[ event.player_index ]
 	local name = event.element.name
 	if name == "toggle-goal-button" then
@@ -413,11 +412,13 @@ script.on_event( defines.events.on_gui_click, function( event )
 			show_shop_GUI( player )
 		end
 	elseif name == "toggle-score-button" then
-		if player.gui.center.score then
+		if player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ] then
 			hide_score_GUI( player )
 		else
 			show_score_GUI( player )
 		end
+	elseif name == CLOSE_BUTTON_FOR_SCORING_GUI then
+		hide_score_GUI( player )
 	elseif name == "no-logistics" or name == "no-production" or name == "no-combat" then
 		choose_starter_bonus( player, "" )
 	elseif name == "button-logistics" then
@@ -451,7 +452,7 @@ script.on_event( defines.events.on_gui_closed, function( event )
 	end
 	if element.name == "shop" then
 		hide_shop_GUI( game.players[ event.player_index ])
-	elseif element.name == "score" then
+	elseif element.name == SCORING_GUI_TOP_LEVEL_NAME then
 		hide_score_GUI( game.players[ event.player_index ])
 	end
 end )
