@@ -48,6 +48,7 @@ function initial_recipes()
 		player.gui.left.add{ type = "button", name = "toggle-goal-button", caption = { "military-supply-scenario-goals-GUI.toggle-button" }}
 		player.gui.left.add{ type = "button", name = "toggle-shop-button", caption = { "military-supply-scenario-shop-GUI.toggle-button" }}
 		player.gui.left.add{ type = "button", name = "toggle-score-button", caption = { "military-supply-scenario-score.toggle-button" }}
+		player.set_goal_description({ "military-supply-scenario-objective.player-objective-text2" })
 	end	
 end
 
@@ -200,7 +201,7 @@ end
 
 function starter_bonus_GUI()
 	for _, player in pairs( game.players ) do
-		create_starter_bonus_GUI( player )
+		update_main_GUI_for_starter_bonus( player )
 	end
 end
 

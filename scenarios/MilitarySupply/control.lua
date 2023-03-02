@@ -273,13 +273,8 @@ end )
 script.on_event( defines.events.on_player_created, function( event )
 	local player = game.players[ event.player_index ]
 	
-	player.gui.left.style = "military-supply-flow"
-	
-	--In the top-left corner of the screen, the player's objective will be outlined:
-	local objective = player.gui.left.add{ type = "frame", name = "objective", direction = "vertical", style = "military-supply-objectives-frame", caption = { "military-supply-scenario-objective.player-objective-title" }}
-	objective.add{ type = "label", name = "objective-text1", caption = { "military-supply-scenario-objective.player-objective-text1" }}
-	objective.add{ type = "label", name = "objective-text2", caption = { "military-supply-scenario-objective.player-objective-text2" }}
-	
+	create_main_GUI( player )
+
 	--Disable all recipes:
 	--We assume that this command is only triggered once: at the very beginning of the scenario.
 	for k, v in pairs( player.force.recipes ) do
@@ -412,7 +407,7 @@ script.on_event( defines.events.on_gui_click, function( event )
 			show_shop_GUI( player )
 		end
 	elseif name == "toggle-score-button" then
-		if player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ] then
+		if get_is_score_GUI_open( player ) then
 			hide_score_GUI( player )
 		else
 			show_score_GUI( player )

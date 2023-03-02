@@ -21,3 +21,12 @@ data.raw[ "gui-style" ].default[ "military-supply-objectives-frame" ] =
 	left_padding = data.raw[ "gui-style" ].default[ "frame" ].left_padding / 2,
 	right_padding = data.raw[ "gui-style" ].default[ "frame" ].right_padding / 2,
 }
+
+data.raw[ "gui-style" ].default[ "inside_shallow_frame_with_padding_and_spacing" ] =
+{
+	type = "vertical_frame_style",
+	parent = "inside_shallow_frame",
+	
+	--Add extra space between items:
+	vertical_spacing = 4
+}

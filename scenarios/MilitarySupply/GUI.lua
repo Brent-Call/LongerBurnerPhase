@@ -2,6 +2,23 @@
 SCORING_GUI_TOP_LEVEL_NAME = "MilitarySupply:scoring"
 CLOSE_BUTTON_FOR_SCORING_GUI = "totally-unique-string-{a9b462b5-836e-4d5e-ae5a-37bdf046450a}"
 
+--Initializes the main GUI for the MilitarySupply scenario.
+--Call this only once per player.
+function create_main_GUI( player )
+	local frame = player.gui.left.add({ type = "frame", name = "MilitarySupply:main", caption = { "military-supply-scenario-gui.title1" }, style = "non_draggable_frame" })
+	frame.add({ type = "frame", name = "inner", direction = "vertical", style = "inside_shallow_frame_with_padding_and_spacing" })
+	frame.inner.add({ type = "label", name = "info-goes-here", caption = { "military-supply-scenario-gui.description1" }})
+end
+
+--Sets up the main GUI to instruct the player to choose a starter package.
+function update_main_GUI_for_starter_bonus( player )
+	local mainOuter = player.gui.left[ "MilitarySupply:main" ]
+	mainOuter.caption = { "military-supply-scenario-gui.title2" }
+	local inner = mainOuter.inner
+	inner[ "info-goes-here" ].caption = { "military-supply-scenario-gui.description2" } 
+	inner.add({ type = "button", name = "open-starter-package-GUI-button", caption = { "military-supply-scenario-gui.choose-starter-package" }})
+end
+
 function show_goal( player )
 	if not player.gui.left.goal then
 		player.gui.left.add{ type = "frame", name = "goal", caption = { "military-supply-scenario-goals-GUI.goal-count", global.goalManager.goalsCompleted }, direction = "vertical" }
@@ -148,11 +165,34 @@ function get_caption_for_scoring_GUI()
 	return { "military-supply-scenario-score.current-score", string.format( "%.3f", global.scoreManager.finalScore )}
 end
 
+--Returns true if the scoring GUI is visible onscreen.
+--@param player	The player who may or may not have the scoring GUI open.
+--@return			true if the scoring GUI has been created & is visible,
+--				false if it either hasn't been created or if it is hidden
+function get_is_score_GUI_open( player )
+	local scoringGUI = player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ]
+	if scoringGUI then
+		--The scoring GUI has been created, but it might be hidden, so test for that:
+		return scoringGUI.visible
+	end
+	--Else, the scoring GUI has not been created, meaning it's closed.
+	return false
+end
+
 function show_score_GUI( player )
+	local score = player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ]
+	if score then
+		--The scoring GUI has already been created, so just show it & move it to the center of the screen:
+		score.visible = true
+		player.opened = score
+		score.force_auto_center()
+		return
+	end
+	--Else, this is the first time we've seen the score GUI, so we need to create all the GUI elements.
 	--First, calculate the score:
 	calculate_score_manager_object( global.scoreManager )
 	
-	local score = player.gui.screen.add{ type = "frame", name = SCORING_GUI_TOP_LEVEL_NAME, direction = "vertical" }
+	score = player.gui.screen.add{ type = "frame", name = SCORING_GUI_TOP_LEVEL_NAME, direction = "vertical" }
 	player.opened = score
 	score.force_auto_center()
 
@@ -215,25 +255,34 @@ function update_score_GUI( player )
 end
 
 function hide_score_GUI( player )
+	--We literally make it invisible, because regenerating the entire GUI from scratch all the time is tedious.
 	local score = player.gui.screen[ SCORING_GUI_TOP_LEVEL_NAME ]
 	if score then
-		score.destroy()
+		score.visible = false
+		if player.opened == score then
+			player.opened = nil
+		end
 	end
 end
 
 function create_starter_bonus_GUI( player )
+	local mainOuter = player.gui.left[ "MilitarySupply:main" ]
+	mainOuter.caption = { "military-supply-scenario-gui.title2" }
+	local inner = mainOuter.inner
+	inner[ "info-goes-here" ].caption = { "military-supply-scenario-gui.description2" }
+
 	local GUI = player.gui.left.add{ type = "frame", name = "starter-bonus-GUI", caption = { "military-supply-scenario-starter-bonus-GUI.gui-title" }, direction = "horizontal" }
-	GUI.add{ type = "sprite-button", name = "button-logistics", sprite = "item-group/logistics", tooltip = { "military-supply-scenario-starter-bonus-GUI.package-logistics-name" }}
-	GUI.add{ type = "sprite-button", name = "button-production", sprite = "item-group/production", tooltip = { "military-supply-scenario-starter-bonus-GUI.package-production-name" }}
-	GUI.add{ type = "sprite-button", name = "button-combat", sprite =  "item-group/combat", tooltip = { "military-supply-scenario-starter-bonus-GUI.package-combat-name" }}
+	inner.add{ type = "sprite-button", name = "button-logistics", sprite = "item-group/logistics", tooltip = { "military-supply-scenario-starter-bonus-GUI.package-logistics-name" }}
+	inner.add{ type = "sprite-button", name = "button-production", sprite = "item-group/production", tooltip = { "military-supply-scenario-starter-bonus-GUI.package-production-name" }}
+	inner.add{ type = "sprite-button", name = "button-combat", sprite =  "item-group/combat", tooltip = { "military-supply-scenario-starter-bonus-GUI.package-combat-name" }}
 	
 	--Make the pictures 64x64:
-	GUI[ "button-logistics" ].style.width = 64
-	GUI[ "button-logistics" ].style.height = 64
-	GUI[ "button-production" ].style.width = 64
-	GUI[ "button-production" ].style.height = 64
-	GUI[ "button-combat" ].style.width = 64
-	GUI[ "button-combat" ].style.height = 64
+	inner[ "button-logistics" ].style.width = 64
+	inner[ "button-logistics" ].style.height = 64
+	inner[ "button-production" ].style.width = 64
+	inner[ "button-production" ].style.height = 64
+	inner[ "button-combat" ].style.width = 64
+	inner[ "button-combat" ].style.height = 64
 	
 end
 
@@ -352,7 +401,5 @@ function receive_starter_bonus( player, packageChosen )
 end
 
 function update_objective( player )
-	local objective = player.gui.left.objective
-	objective.clear()
-	objective.add{ type = "label", name = "objective-text3", caption = { "military-supply-scenario-objective.player-objective-text3" }}
+	player.set_goal_description({ "military-supply-scenario-objective.player-objective-text3" })
 end
