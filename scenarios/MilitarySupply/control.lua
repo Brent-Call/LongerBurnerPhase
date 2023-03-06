@@ -16,7 +16,10 @@ function create_scenario()
 	--Number of upgrades already purchased:
 	scenario.purchasedUpgrades = 0
 	scenario.money = 0
+	--Completing goals gives you money.  The amount of money is multiplied by this number.
 	scenario.moneyMultiplier = 1
+	--A multiplier to your final score.
+	scenario.scoreMultiplier = 1
 	scenario.playerDeaths = 0
 	--Time limit is 6 hours.  Shouldn't really be a problem, unless you die a lot.
 	scenario.secondsLeft = 60 * 60 * 6
@@ -163,8 +166,8 @@ calculate_score_manager_object = function( self )
 	self.rawTotal = self.pointsFromGoals + self.pointsFromTime + self.pointsFromUpgrades
 	--Divide by the number of player deaths + 1:
 	self.divisorFromDeaths = mS.playerDeaths + 1
-	--The multiplier to goal rewards also acts as a multiplier to player score:
-	self.multiplier = mS.moneyMultiplier
+	--Apply the scenario score multiplier:
+	self.multiplier = mS.scoreMultiplier
 	--The calculation for final score is: ( raw total divided by deaths divisor ) times money multiplier:
 	self.finalScore = ( self.rawTotal / self.divisorFromDeaths ) * self.multiplier
 end
@@ -179,10 +182,11 @@ script.on_init( function()
 	--Iron is worth 0.5
 	--Stone bricks are worth 0.75
 	--Steel is worth 1.25
-	--Each item here has 3 data values:
-	--   [ 1 ]: the name
-	--   [ 2 ]: the price for 1 of them
-	--   [ 3 ]: maximum amount in one order
+	--Each item here has 4 data values:
+	--	name: The name of the item prototype.
+	--	price: The price of 1 item of this type.
+	--	min: The minimum amount that can be in one order.
+	--	max: The maximum amount that can be in one order.
 	global.goalItemTable = {}
 	
 	local mS = global.militarySupplyScenario
@@ -258,8 +262,8 @@ script.on_init( function()
 	local dropoffChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-dropoff-chest", position = { 2, 0 }, force = "player" }
 	dropoffChest.destructible = false
 	
-	--Make the day twice as long:
-	game.surfaces[ 1 ].ticks_per_day = game.surfaces[ 1 ].ticks_per_day * 2
+	--Make the day 15 minutes long, which is longer than by default.
+	game.surfaces[ 1 ].ticks_per_day = 60 * 60 * 15
 	
 	set_next_message_of_scenario_object( mS, 60, "thoughts-initial1" )
 
@@ -323,7 +327,7 @@ script.on_nth_tick( 300, function( event )
 		game.set_game_state{ game_finished = true, player_won = true, can_continue = false }
 	end
 	for _, player in pairs( game.players ) do
-		update_goal( player )
+		update_goals_GUI( player )
 		update_shop_GUI( player )
 	end
 end )
@@ -361,7 +365,7 @@ script.on_nth_tick( 60, function( event )
 		
 	for _, player in pairs( game.players ) do
 		--While we're looping through all players, we might as well:
-		update_goal_timer( player )
+		update_scenario_timer( player )
 
 		--local scanArea = {{ player.position.x - 48, player.position.y - 48 }, { player.position.x + 48, player.position.y + 48 }}
 	
@@ -394,19 +398,19 @@ script.on_event( defines.events.on_gui_click, function( event )
 	--Create some local variables:\
 	local player = game.players[ event.player_index ]
 	local name = event.element.name
-	if name == "toggle-goal-button" then
-		if player.gui.left.goal then
-			hide_goal( player )
+	if name == BUTTON_TO_TOGGLE_GOALS_GUI then
+		if get_is_goals_GUI_open( player ) then
+			hide_goals_GUI( player )
 		else
-			show_goal( player )
+			show_goals_GUI( player )
 		end
-	elseif name == "toggle-shop-button" then
-		if player.gui.center.shop then
+	elseif name == BUTTON_TO_TOGGLE_SHOP_GUI then
+		if get_is_shop_GUI_open( player ) then
 			hide_shop_GUI( player )
 		else
 			show_shop_GUI( player )
 		end
-	elseif name == "toggle-score-button" then
+	elseif name == BUTTON_TO_TOGGLE_SCORE_GUI then
 		if get_is_score_GUI_open( player ) then
 			hide_score_GUI( player )
 		else
@@ -414,20 +418,22 @@ script.on_event( defines.events.on_gui_click, function( event )
 		end
 	elseif name == CLOSE_BUTTON_FOR_SCORING_GUI then
 		hide_score_GUI( player )
-	elseif name == "no-logistics" or name == "no-production" or name == "no-combat" then
-		choose_starter_bonus( player, "" )
-	elseif name == "button-logistics" then
-		choose_starter_bonus( player, "logistics" )
-	elseif name == "button-production" then
-		choose_starter_bonus( player, "production" )
-	elseif name == "button-combat" then
-		choose_starter_bonus( player, "combat" )
-	elseif name == "yes-logistics" then
-		receive_starter_bonus( player, "logistics" )
-	elseif name == "yes-production" then
-		receive_starter_bonus( player, "production" )
-	elseif name == "yes-combat" then
-		receive_starter_bonus( player, "combat" )
+	elseif name == CLOSE_BUTTON_FOR_SHOP_GUI then
+		hide_shop_GUI( player )
+	elseif name == BUTTON_TO_OPEN_STARTER_PACKAGE_GUI then
+		create_starter_package_GUI( player )
+	elseif name == CLOSE_BUTTON_FOR_STARTER_PACKAGE_GUI then
+		destroy_starter_package_GUI( player )
+	elseif name == BUTTON_TO_DESELECT_STARTER_PACKAGE then
+		choose_starter_package( player, nil )
+	elseif name == BUTTON_TO_SELECT_LOGISTICS_STARTER_PACKAGE then
+		choose_starter_package( player, "logistics" )
+	elseif name == BUTTON_TO_SELECT_PRODUCTION_STARTER_PACKAGE then
+		choose_starter_package( player, "production" )
+	elseif name == BUTTON_TO_SELECT_COMBAT_STARTER_PACKAGE then
+		choose_starter_package( player, "combat" )
+	elseif name == BUTTON_TO_CONFIRM_STARTER_PACKAGE then
+		receive_starter_package( player, get_which_starter_package_is_chosen( player ))
 	--If it was an upgrade in the shop, check to see if it has the correct prefix:
 	elseif string.sub( name, 1, 15 ) == "upgrades-button" then
 		--Then take away the prefix to find the name of the upgrade, and purchase it:
@@ -440,15 +446,19 @@ script.on_event( defines.events.on_gui_click, function( event )
 	end
 end )
 
+--When the player uses the input to close a GUI, actually hide that GUI onscreen.
 script.on_event( defines.events.on_gui_closed, function( event )
 	local element = event.element
+	local player = game.players[ event.player_index ]
 	if not element then
 		return
 	end
-	if element.name == "shop" then
-		hide_shop_GUI( game.players[ event.player_index ])
+	if element.name == SHOP_GUI_TOP_LEVEL_NAME then
+		hide_shop_GUI( player )
 	elseif element.name == SCORING_GUI_TOP_LEVEL_NAME then
-		hide_score_GUI( game.players[ event.player_index ])
+		hide_score_GUI( player )
+	elseif element.name == STARTER_PACKAGE_GUI_TOP_LEVEL_NAME then
+		destroy_starter_package_GUI( player )
 	end
 end )
 
@@ -469,18 +479,28 @@ script.on_event( defines.events.on_player_died, function( event )
 	--If you die, it's a 1-hour penalty to the time limit.
 	mS.secondsLeft = mS.secondsLeft - 60 * 60
 	mS.playerDeaths = mS.playerDeaths + 1
-	display_message_of_scenario_object( mS, "thoughts-player-died" )
 	update_scores()
 	
-	--Since the time limit changed, reflect that instantly:
-	for _, player in pairs( game.players ) do
-		update_goal( player )
+	if mS.secondsLeft <= 0 then
+		--If you run out of time, you lose.
+		game.set_game_state{ game_finished = true, player_won = false, can_continue = false }
 	end
+	
+	--Since the time limit changed, reflect that instantly for all players:
+	for _, player in pairs( game.players ) do
+		update_scenario_timer( player )
+		update_scenario_deaths( player )
+	end
+end )
+
+--The character will have a comment to make about respawning.
+script.on_event( defines.events.on_player_respawned, function( event )
+	display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-player-died" )
 end )
 
 script.on_event( defines.events.on_built_entity, function( event )
 	local entity = event.created_entity
-	
+
 	if entity.name == "gun-turret" then
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-built-turret" )
 	end
@@ -491,9 +511,8 @@ end )
 
 --Utility function used only for debugging.
 --I'll leave it in the release version since it has no effect on gameplay whatsoever.
---Prints out all of the items in global.goalItemTable.
+--WARNING: this function pollutes the log file when called.
 print_goalItemTable = function()
-	for _, val in pairs( global.goalItemTable ) do
-		game.print( val[ 1 ])
-	end
+	game.print( "global.goalItemTable is a table with "..table_size( global.goalItemTable ).." elements.  See the log file for details." )
+	log( "global.goalItemTable is a table with "..table_size( global.goalItemTable ).." elements: "..serpent.block( global.goalItemTable ))
 end

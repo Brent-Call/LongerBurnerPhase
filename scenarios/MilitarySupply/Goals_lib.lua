@@ -2,6 +2,77 @@
 --This file contains functions related to creation and completion of goals in my scenario, MilitarySupply.
 --This file was coded by Q.
 
+--Adds a new entry to the global table of goal items.
+--If for some reason that global table doesn't exist, initializes it to be an empty table.
+--Does NOT check for duplicates.
+--@param itemName	A string containing the name of a valid item prototype.
+--@param itemPrice	A number representing the item's value in $ per 1 item.  Must be greater than 0.
+--@param minQty	A number representing the minimum order size.  Must be an integer greater than or equal to 1.
+--@param maxQty	A number representing the maximum order size.  Must be an integer greater than or equal to minQty
+--@return	nil
+function add_goal_item( itemName, itemPrice, minQty, maxQty )
+	if type( itemName ) ~= "string" then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter itemName was of wrong type (string expected, got "..type( itemName ).."." )
+	end
+	if type( itemPrice ) ~= "number" then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter itemPrice was of wrong type (number expected, got "..type( itemPrice ).."." )
+	end
+	if type( minQty ) ~= "number" then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter minQty was of wrong type (number expected, got "..type( minQty ).."." )
+	end
+	if type( maxQty ) ~= "number" then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter maxQty was of wrong type (number expected, got "..type( maxQty ).."." )
+	end
+	if game.item_prototypes[ itemName ] == nil then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"No item prototype exists with the given itemName \""..itemName.."\"." )
+	end
+	if itemPrice <= 0 then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter itemPrice is supposed to be positive, got "..itemPrice.." instead." )
+	end
+	if minQty ~= math.floor( minQty ) then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter minQty is supposed to be an integer, got "..minQty.." instead." )
+	end
+	if maxQty ~= math.floor( maxQty ) then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter maxQty is supposed to be an integer, got "..maxQty.." instead." )
+	end
+	if minQty < 1 then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter minQty is supposed to be >= 1, got "..minQty.." instead." )
+	end
+	if maxQty < minQty then
+		error( "Error in add_goal_item(itemName,itemPrice,minQty,maxQty).  "..
+				"Parameter maxQty ("..maxQty..") was smaller than minQty ("..minQty.."), which is not supposed to happen." )
+	end
+
+	if type( global.goalItemTable ) ~= "table" then
+		global.goalItemTable = {}
+	end
+
+	table.insert( global.goalItemTable, { name = itemName, price = itemPrice, min = minQty, max = maxQty })
+end
+
+--Removes an entry from the global table of goal items.
+--If for some reason that global table doesn't exist, does nothing instead.
+--If the item requested is not present, does nothing instead.
+--@param itemName	A string containing the name of the item to remove.
+--@return	nil
+function remove_goal_item( itemName )
+	for k, v in ipairs( global.goalItemTable ) do
+		if v.name == itemName then
+			table.remove( global.goalItemTable, k )
+			return
+		end
+	end
+end
+
 function make_random_goal()
 	--Skip everything if there are no accepted items:
 	if #global.goalItemTable == 0 then
@@ -10,13 +81,13 @@ function make_random_goal()
 	--Else, there is at least 1 item we can use:
 	local itemTable = global.goalItemTable[ math.random( #global.goalItemTable )]
 	--Else, there is at least 1 item, & the one we are using is valid.
-	local itemName = itemTable[ 1 ]
+	local itemName = itemTable.name
 	if game.players[ 1 ].force.recipes[ itemName ].enabled == false then
 		--The recipe isn't unlocked, so skip it!
 		return
 	end
-	local amount = math.random( itemTable[ 3 ] )
-	local moneyValue = math.floor( itemTable[ 2 ] * amount )
+	local amount = math.random( itemTable.min, itemTable.max )
+	local moneyValue = math.floor( itemTable.price * amount )
 	
 	--Now check: make sure that the goal manager does not already have a goal of this type:
 	for k, goal in pairs( global.goalManager.allGoals ) do
@@ -60,12 +131,15 @@ end
 function add_goal_to_table( goal, guiTable )
 	local multi = global.militarySupplyScenario.moneyMultiplier
 	
-	guiTable.add{ type = "label", name = goal.ID.."-item", caption = game.item_prototypes[ goal.item ].localised_name }
-	guiTable.add{ type = "label", name = goal.ID.."-count", caption = goal.count }
-	if multi > 1 then
-		guiTable.add{ type = "label", name = goal.ID.."-reward", caption = { "military-supply-scenario-goals-GUI.money-value-with-bonus", goal.moneyValue, multi, goal.moneyValue * multi }}
+	guiTable.add{ type = "label", caption = game.item_prototypes[ goal.item ].localised_name }
+	guiTable.add{ type = "label", caption = goal.count }
+	if guiTable.column_count == 4 then
+		--Table has 4 columns: 3rd for base reward, 4th for final reward.
+		guiTable.add{ type = "label", caption = { "military-supply-scenario-gui.goals-table-reward", goal.moneyValue }}
+		guiTable.add{ type = "label", caption = { "military-supply-scenario-gui.goals-table-reward", goal.moneyValue * multi }}
 	else
-		guiTable.add{ type = "label", name = goal.ID.."-reward", caption = { "military-supply-scenario-goals-GUI.money-value", goal.moneyValue }}
+		--Table has 3 columns: 4th is for final reward only
+		guiTable.add{ type = "label", caption = { "military-supply-scenario-gui.goals-table-reward", goal.moneyValue * multi }}
 	end
 end
 
@@ -138,13 +212,7 @@ check_all_goals_of_goals_manager = function( m, LuaInventory )
 	--Now tell the player how much money was earned:
 	if m.moneyThisTick > 0 then
 		--Contains a LocalisedString of what it will say:
-		local flyingTextStr = {}
-		
-		if global.militarySupplyScenario.moneyMultiplier > 1 then
-			flyingTextStr = { "military-supply-scenario-goals-GUI.money-value-with-bonus", m.baseMoneyThisTick, global.militarySupplyScenario.moneyMultiplier, m.moneyThisTick }
-		else
-			flyingTextStr = { "military-supply-scenario-goals-GUI.money-value", m.moneyThisTick }
-		end
+		local flyingTextStr = { "military-supply-scenario-gui.money-gained", m.moneyThisTick }
 			
 		game.surfaces[ 1 ].create_entity{ name = "flying-text", position = { 0, 0 }, text = flyingTextStr, color = { r = 0, g = 1, b = 0 }}
 	end

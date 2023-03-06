@@ -11,8 +11,8 @@ function initial_resources()
 end
 	
 function initial_recipes()
-	table.insert( global.goalItemTable, { "pistol", 3.75, 20 })
-	table.insert( global.goalItemTable, { "firearm-magazine", 2, 400 })
+	add_goal_item( "pistol", 3.75, 5, 20 )
+	add_goal_item( "firearm-magazine", 2, 40, 400 )
 
 	for _, force in pairs( game.forces ) do
 		local recipes = force.recipes
@@ -44,11 +44,7 @@ function initial_recipes()
 	end
 	
 	for _, player in pairs( game.players ) do
-		--Add 3 buttons to the player's GUI, allowing them to see the goals table, the shop, & the score:
-		player.gui.left.add{ type = "button", name = "toggle-goal-button", caption = { "military-supply-scenario-goals-GUI.toggle-button" }}
-		player.gui.left.add{ type = "button", name = "toggle-shop-button", caption = { "military-supply-scenario-shop-GUI.toggle-button" }}
-		player.gui.left.add{ type = "button", name = "toggle-score-button", caption = { "military-supply-scenario-score.toggle-button" }}
-		player.set_goal_description({ "military-supply-scenario-objective.player-objective-text2" })
+		update_main_GUI_for_scenario( player )
 	end	
 end
 
@@ -64,7 +60,7 @@ function on_find_shipwreck()
 	--Maybe you could turn those in for $800?
 	add_goal_to_goals_manager( global.goalManager, "military-science-pack", 200, 800 )
 	for _, player in pairs( game.players ) do
-		update_goal( player )
+		update_goals_GUI( player )
 	end
 end
 
@@ -78,9 +74,8 @@ function unlock_eternity_ray()
 	end
 	
 	for _, player in pairs( game.players ) do
-		--Update the player's objective:
-		--Now it will say that to win the player must build the ETERNITY RAY.
-		update_objective( player )
+		--Now it will say that to win, the player must build the ETERNITY RAY.
+		update_main_GUI_for_final_objective( player )
 	end
 	
 	--Tell the scenario object to add zarnium crystals to the SUPPLY DROPOFF CHEST:
@@ -100,7 +95,7 @@ end
 
 function upgrades_after_wall()	
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "repair", "item/repair-pack", 75 )
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "light-armor", "item/light-armor", 225 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "light-armor", "item/light-armor", 150 )
 end
 
 function upgrades_after_repair()	
@@ -160,7 +155,7 @@ function upgrades_after_circuit_network()
 end
 
 function upgrades_after_armor()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "heavy-armor", "item/heavy-armor", 500 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "heavy-armor", "item/heavy-armor", 400 )
 end
 
 function upgrades_after_piercing_ammo()
@@ -230,7 +225,7 @@ upgradeAssociatedFunctions =
 			force.recipes[ "submachine-gun" ].enabled = true
 		end
 		
-		table.insert( global.goalItemTable, { "submachine-gun", 16.25, 20 })
+		add_goal_item( "submachine-gun", 16.25, 5, 20 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-smg" )
 		upgrades_after_smg()
 	end,
@@ -239,7 +234,7 @@ upgradeAssociatedFunctions =
 			force.recipes[ "piercing-rounds-magazine" ].enabled = true
 		end
 		
-		table.insert( global.goalItemTable, { "piercing-rounds-magazine", 4.5, 400 })
+		add_goal_item( "piercing-rounds-magazine", 4.5, 40, 400 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-piercing-ammo" )
 		upgrades_after_piercing_ammo()
 	end,
@@ -251,7 +246,7 @@ upgradeAssociatedFunctions =
 			recipes[ "gate" ].enabled = true
 		end
 	
-		table.insert( global.goalItemTable, { "stone-wall", 3.75, 100 })
+		add_goal_item( "stone-wall", 3.75, 20, 200 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-wall" )
 		upgrades_after_wall()
 	end,
@@ -287,10 +282,8 @@ upgradeAssociatedFunctions =
 	[ "light-armor" ] = function()
 		for _, force in pairs( game.forces ) do
 			force.recipes[ "light-armor" ].enabled = true
-			--Adds 1 extra row of inventory slots, which is 10 stacks
-			force.character_inventory_slots_bonus = force.character_inventory_slots_bonus + 10
 		end
-		table.insert( global.goalItemTable, { "light-armor", 20, 5 })
+		add_goal_item( "light-armor", 20, 2, 5 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-light-armor" )
 		upgrades_after_armor()
 	end,
@@ -346,12 +339,13 @@ upgradeAssociatedFunctions =
 		upgrades_after_electricity_1()
 	end,
 	[ "money-bonus" ] = function()
-		--Provides a *2 bonus to money from goals
+		--Provides a *2 bonus to money from goals & a *2 bonus to score
 		global.militarySupplyScenario.moneyMultiplier = global.militarySupplyScenario.moneyMultiplier * 2
+		global.militarySupplyScenario.scoreMultiplier = global.militarySupplyScenario.scoreMultiplier * 2
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-money-multiplier" )
 		update_scores()
 		for _, player in pairs( game.players ) do
-			update_goal( player )
+			update_goals_GUI( player )
 		end
 	end,
 	[ "iron-sticks-gear" ] = function()
@@ -448,18 +442,15 @@ upgradeAssociatedFunctions =
 	[ "heavy-armor" ] = function()
 		for _, force in pairs( game.forces ) do
 			force.recipes[ "heavy-armor" ].enabled = true
-			--Adds 1 extra quickbar:
-			--Since 0.17, the number of quickbars is not determiend by research.  Add inventory slots instead.
-			force.character_inventory_slots_bonus = force.character_inventory_slots_bonus + 10
 		end
-		table.insert( global.goalItemTable, { "heavy-armor", 87.5, 5 })
+		add_goal_item( "heavy-armor", 87.5, 2, 5 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-heavy-armor" )
 	end,
 	grenade = function()
 		for _, force in pairs( game.forces ) do
 			force.recipes[ "grenade" ].enabled = true
 		end
-		table.insert( global.goalItemTable, { "grenade", 5, 150 })
+		add_goal_item( "grenade", 5, 20, 200 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-grenade" )
 		upgrades_after_grenade()
 	end,
@@ -486,8 +477,8 @@ upgradeAssociatedFunctions =
 	turret = function()
 		--Purchasing the turret renders the old pistol obsolete.
 		--(In truth, it was obsolete the moment we got the SMG, but now they will no longer be accepted as goal items.)
-		table.remove( global.goalItemTable, 1 )
-		table.insert( global.goalItemTable, { "gun-turret", 22.5, 100 })
+		remove_goal_item( "pistol" )
+		add_goal_item( "gun-turret", 22.5, 15, 100 )
 		
 		for _, force in pairs( game.forces ) do
 			force.recipes[ "gun-turret" ].enabled = true
@@ -514,8 +505,9 @@ upgradeAssociatedFunctions =
 			--Allow 5 followers right from the start:
 			force.maximum_following_robot_count = 5
 		end
-		table.insert( global.goalItemTable, { "poison-capsule", 7.5, 150 })
-		table.insert( global.goalItemTable, { "defender-capsule", 9.25, 50 })
+		add_goal_item( "poison-capsule", 7.5, 10, 200 )
+		add_goal_item( "defender-capsule", 9.25, 10, 50 )
+		remove_goal_item( "firearm-magazine" )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-capsules" )
 		upgrades_after_capsules()
 	end,

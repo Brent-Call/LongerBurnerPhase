@@ -1,10 +1,17 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.4
-Date: 01. 03. 2023
+Date: 04. 03. 2023
   Balancing:
     - Increased mining radius of advanced burner mining drill to make building new mining setups easier.  This may break existing mining setups if you have mixed ores.
+    - MilitarySupply: Tweaked the amount of items requested per order.
+    - MilitarySuuply: Armor upgrades no longer grant inventory size bonuses.  Reduced the prices of the upgrades to compensate.
   Changes:
     - MilitarySupply: Research is now disabled for all forces, not just the player's force.  I expect this never to be relevant.
+    - MilitarySupply: The day-night cycle now has a period of 15 minutes.
+    - MilitarySupply: Choosing the combat starter package now gives an armor with nightvision equipment installed.
+    - MilitarySupply: Overhauled various parts of the code.  Most of you won't care, but I did it anyways.
+  Gui:
+    - MilitarySupply: Completely redesigned most of the GUIs in the scenario.
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 18. 12. 2020

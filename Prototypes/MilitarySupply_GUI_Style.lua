@@ -1,32 +1,76 @@
---This file contains the style for the MilitarySupply gui:
-data.raw[ "gui-style" ].default[ "military-supply-flow" ] =
-{
-	type = "vertical_flow_style",
-	parent = "vertical_flow",
-	
-	--Remove extra space between items:
-	vertical_spacing = 0
-}
-data.raw[ "gui-style" ].default[ "military-supply-objectives-frame" ] =
+--MilitarySupply_GUI_Style.lua
+--This file contains GUI styles specifically for the MilitarySupply scenario.
+
+--This frame_style is used for a light-gray colored inner frame with padding along the edges & vertical spacing
+--on the elements inside.
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:inside_shallow_frame_with_padding_and_spacing" ] =
 {
 	type = "frame_style",
-	parent = "frame",
-	--Make the caption font orange:
-	font_color = default_orange_color,
+	parent = "inside_shallow_frame_with_padding",
 	
-	--Cut all spacing values in half or approximately so:
-	title_bottom_padding = 8,
-	top_padding = data.raw[ "gui-style" ].default[ "frame" ].top_padding / 2,
-	bottom_padding = data.raw[ "gui-style" ].default[ "frame" ].bottom_padding / 2,
-	left_padding = data.raw[ "gui-style" ].default[ "frame" ].left_padding / 2,
-	right_padding = data.raw[ "gui-style" ].default[ "frame" ].right_padding / 2,
+	vertical_flow_style =
+	{
+		type = "vertical_flow_style",
+		--Add extra space between items:
+		vertical_spacing = 4
+	}
 }
-
-data.raw[ "gui-style" ].default[ "inside_shallow_frame_with_padding_and_spacing" ] =
+--This is used for the draggable space in the titlebar of a GUI:
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:titlebar_draggable_space" ] =
 {
-	type = "vertical_frame_style",
-	parent = "inside_shallow_frame",
-	
-	--Add extra space between items:
-	vertical_spacing = 4
+	type = "empty_widget_style",
+	parent = "draggable_space_header",
+	height = 24,
+	horizontally_stretchable = "on"
+}
+--This is used for the draggable space in the footer of a GUI such as a dialog box:
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:footer_draggable_space" ] =
+{
+	type = "empty_widget_style",
+	parent = "draggable_space_header",
+	height = 32,
+	horizontally_stretchable = "on"
+}
+--This is used for a slot button that's 64x64 pixels.
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:slot_button_64px" ] =
+{
+	type = "button_style",
+	parent = "slot_button",
+	size = 64
+}
+--This is used for a horizontal flow with extra spacing that keeps things centered.
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:score_gui_centering_flow" ] =
+{
+	type = "horizontal_flow_style",
+	parent = "centering_horizontal_flow",
+	horizontal_spacing = 16,
+	horizontally_stretchable = "on"
+}
+--This is used for a shallow frame with padding but no horizontal stretching.
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:score_gui_compact_inside_frame" ] =
+{
+	type = "frame_style",
+	parent = "inside_shallow_frame_with_padding",
+	horizontally_stretchable = "off"
+}
+--This is used for the table of available upgrades in the Shop GUI.
+data.raw[ "gui-style" ].default[ "Q-LongerBurnerPhase:shop-gui-table" ] =
+{
+	type = "table_style",
+	right_cell_padding = 4,
+	column_widths =
+	{
+		{
+			column = 1, --Sprite buttons
+			width = 40
+		},
+		{
+			column = 2, --Effects of upgrade
+			minimal_width = 160
+		},
+		{
+			column = 3, --Cost of upgrade
+			minimal_width = 40
+		}
+	}
 }

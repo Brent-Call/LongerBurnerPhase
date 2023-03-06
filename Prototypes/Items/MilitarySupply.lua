@@ -59,18 +59,5 @@ data:extend({
 	subgroup = "raw-resource",
 	order = "a[ zarnium-crystal ]",
 	stack_size = 50
-},
---This is just Power Armor without the inventory boost & no equipment grid:
-{
-	type = "armor",
-	name = "military-supply-power-armor",
-	icon = data.raw.armor[ "power-armor" ].icon,
-	icon_size = data.raw.armor[ "power-armor" ].icon_size,
-	flags = { "hidden" },
-	resistances = table.deepcopy( data.raw.armor[ "power-armor" ].resistances ),
-	subgroup = "armor",
-	order = "a[ military-supply-power-armor ]",
-	stack_size = 1,
-	infinite = true
 }
 })
