@@ -1,5 +1,5 @@
 --Parts of the Eternity Ray are tinted this color:
-local eternityRayTint = { r = 1, g = 0.5, b = 0, a = 0.5 }
+local eternityRayTint = { r = 1, g = 0.5, b = 0, a = 1 }
 
 data:extend({
 {
@@ -53,7 +53,7 @@ data:extend({
 {
 	type = "item",
 	name = "military-supply-zarnium-crystal",
-	icons = {{ icon = "__LongerBurnerPhase__/Graphics/Items/MilitarySupply/zarnium-crystal.png", tint = { r = 0, g = 0, b = 1, a = 0.5 }}},
+	icons = {{ icon = "__LongerBurnerPhase__/Graphics/Items/MilitarySupply/zarnium-crystal.png", tint = { r = 0, g = 0, b = 1, a = 1 }}},
 	icon_size = 32,
 	flags = { "hidden" },
 	subgroup = "raw-resource",
