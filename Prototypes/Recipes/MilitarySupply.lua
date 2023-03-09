@@ -21,9 +21,9 @@ data:extend({
 	energy_required = 5,
 	ingredients =
 	{
+		{ "steel-plate", 15 },
 		{ "concrete", 10 },
-		{ "stone-wall", 10 },
-		{ "steel-plate", 15 }
+		{ "stone-wall", 10 }
 	},
 	result = "military-supply-eternity-ray-structure"
 },
@@ -36,8 +36,8 @@ data:extend({
 	ingredients =
 	{
 		{ "battery", 10 },
-		{ "steam-engine", 3 },
-		{ "big-electric-pole", 3 }
+		{ "big-electric-pole", 3 },
+		{ "steam-engine", 3 }
 	},
 	result = "military-supply-eternity-ray-power-core"
 },
