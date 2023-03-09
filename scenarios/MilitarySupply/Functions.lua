@@ -95,7 +95,7 @@ end
 
 function upgrades_after_wall()	
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "repair", "item/repair-pack", 75 )
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "light-armor", "item/light-armor", 150 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "heavy-armor", "item/heavy-armor", 550 )
 end
 
 function upgrades_after_repair()	
@@ -138,25 +138,16 @@ function upgrades_after_electricity_2()
 end
 
 function upgrades_after_fast_belts()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "solar-panel", "item/solar-panel", 600 )
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "mining-prod-1", "item/electric-mining-drill", 800 )
 end
 
 function upgrades_after_fast_inserter()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "circuit-network", "item/red-wire", 350 )
-end
-
-function upgrades_after_circuit_network()
 	--If Q's Cable-Making Mod is enabled, add an upgrade to unlock a better recipe:
 	if game.recipe_prototypes[ "advanced-cable1" ] then
-		--The mod Iron Sticks Gear is enabled!
 		add_upgrade_to_scenario_object( global.militarySupplyScenario, "better-cable-making", "recipe/advanced-cable1", 750 )
 	end
 end
 
-function upgrades_after_armor()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "heavy-armor", "item/heavy-armor", 400 )
-end
 
 function upgrades_after_piercing_ammo()
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "grenade", "item/grenade", 275  )
@@ -188,10 +179,6 @@ end
 
 function upgrades_after_bullet_2()
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "bullet-bonus-3", "item/firearm-magazine", 700 )
-end
-
-function upgrades_after_bullet_3()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "laser-turret", "item/laser-turret", 900 )
 end
 
 function starter_bonus_GUI()
@@ -281,14 +268,6 @@ upgradeAssociatedFunctions =
 		end
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-repair" )
 		upgrades_after_repair()
-	end,
-	[ "light-armor" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "light-armor" ].enabled = true
-		end
-		add_goal_item( "light-armor", 20, 2, 5 )
-		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-light-armor" )
-		upgrades_after_armor()
 	end,
 	concrete = function()
 		for _, force in pairs( game.forces ) do
@@ -393,23 +372,6 @@ upgradeAssociatedFunctions =
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-red-belt" )
 		upgrades_after_fast_belts()
 	end,
-	[ "solar-panel" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "solar-panel" ].enabled = true
-			force.recipes[ "accumulator" ].enabled = true
-			--Compatibiilty with the Simple Silicon mod:
-			if force.recipes[ "SiSi-quartz" ] then
-				force.recipes[ "SiSi-quartz" ].enabled = true
-			end
-			if force.recipes[ "SiSi-silicon" ] then
-				force.recipes[ "SiSi-silicon" ].enabled = true
-			end
-			if force.recipes[ "SiSi-solar-cell" ] then
-				force.recipes[ "SiSi-solar-cell" ].enabled = true
-			end
-		end
-		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-solar-panel" )
-	end,
 	[ "mining-prod-1" ] = function()
 		for _, force in pairs( game.forces ) do
 			--Adds 4% mining productivity.
@@ -417,25 +379,9 @@ upgradeAssociatedFunctions =
 		end
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-mining-prod-bonus" )
 	end,
-	[ "circuit-network" ] = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "red-wire" ].enabled = true
-			recipes[ "green-wire" ].enabled = true
-			recipes[ "arithmetic-combinator" ].enabled = true
-			recipes[ "decider-combinator" ].enabled = true
-			recipes[ "constant-combinator" ].enabled = true
-			recipes[ "power-switch" ].enabled = true
-			recipes[ "programmable-speaker" ].enabled = true
-		end
-		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-circuit-network" )
-		upgrades_after_circuit_network()
-	end,
 	[ "better-cable-making" ] = function()
 		for _, force in pairs( game.forces ) do
 			force.recipes[ "advanced-cable1" ].enabled = true
-			force.recipes[ "green-to-red-wire" ].enabled = true
-			force.recipes[ "red-to-green-wire" ].enabled = true
 			
 			--Disable the old recipe:
 			force.recipes[ "copper-cable" ].enabled = false
@@ -535,13 +481,6 @@ upgradeAssociatedFunctions =
 			force.set_gun_speed_modifier( "bullet", force.get_gun_speed_modifier( "bullet" ) + 0.25 )
 		end
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-bullet-bonus-3" )
-		upgrades_after_bullet_3()
-	end,
-	[ "laser-turret" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "laser-turret" ].enabled = true
-		end
-		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-laser-turret" )
 	end
 }
 

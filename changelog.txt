@@ -4,13 +4,14 @@ Date: 04. 03. 2023
   Balancing:
     - Increased mining radius of advanced burner mining drill to make building new mining setups easier.  This may break existing mining setups if you have mixed ores.
     - MilitarySupply: Tweaked the amount of items requested per order.
-    - MilitarySuuply: Armor upgrades no longer grant inventory size bonuses.  Reduced the prices of the upgrades to compensate.
+    - MilitarySuuply: Light armor has been removed.  Heavy armor upgrade no longer grants inventory size bonuses.  Changed upgrade prices to compensate.
   Changes:
     - Tweaked some descriptions and some dialogue for the scenario.
     - MilitarySupply: Research is now disabled for all forces, not just the player's force.  I expect this never to be relevant.
     - MilitarySupply: The day-night cycle now has a period of 15 minutes.
     - MilitarySupply: Choosing the combat starter package now gives an armor with nightvision equipment installed.
     - MilitarySupply: Overhauled various parts of the code.  Most of you won't care, but I did it anyways.
+    - MilitarySupply: Solar panels, laser turrets, and circuit network have been removed.
   Gui:
     - MilitarySupply: Completely redesigned most of the GUIs in the scenario.
 ---------------------------------------------------------------------------------------------------
