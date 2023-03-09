@@ -157,6 +157,10 @@ function upgrades_after_fast_belts()
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "mining-prod-1", "item/electric-mining-drill", 800 )
 end
 
+function upgrades_after_mining_1()
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "mining-prod-2", "item/electric-mining-drill", 2000 )
+end
+
 function upgrades_after_fast_inserter()
 	--If Q's Cable-Making Mod is active, add an upgrade to unlock a better recipe:
 	if game.recipe_prototypes[ "advanced-cable1" ] then
@@ -336,7 +340,15 @@ upgradeAssociatedFunctions =
 			--Adds 4% mining productivity.
 			force.mining_drill_productivity_bonus = force.mining_drill_productivity_bonus + 0.04
 		end
-		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-mining-prod-bonus" )
+		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-mining-prod-bonus-1" )
+		upgrades_after_mining_1()
+	end,
+	[ "mining-prod-2" ] = function()
+		for _, force in pairs( game.forces ) do
+			--Adds 6% mining productivity.
+			force.mining_drill_productivity_bonus = force.mining_drill_productivity_bonus + 0.06
+		end
+		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-mining-prod-bonus-2" )
 	end,
 	[ "better-cable-making" ] = function()
 		enable_recipes_for_all({ "advanced-cable1" })
