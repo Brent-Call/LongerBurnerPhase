@@ -1,48 +1,69 @@
 --The code in each of these functions acts on each specific force & player, so it should be multiplayer-safe.
 
+--This function accepts a table with a list of recipes, & it enables those recipes for ALL forces.
+--This is designed to be safe to use with other mods, so if a recipe doesn't exist,
+--this function skips that recipe instead of causing an error.
+--@param arrayOfRecipes	A table where the values are the names of recipe prototypes.
+--					In this implementation, the keys of the table don't matter.
+--					If the recipe with the requested name doesn't exist, silently skips that entry.
+--@return nil
+function enable_recipes_for_all( arrayOfRecipes )
+	for _, force in pairs( game.forces ) do
+		local recipes = force.recipes
+		for _, recipeName in pairs( arrayOfRecipes ) do
+			local theRecipe = recipes[ recipeName ]
+			if theRecipe then
+				if not theRecipe.enabled then
+					theRecipe.enabled = true
+				end
+			end
+		end
+	end
+end
+
+--This function accepts a table with a list of recipes, & it disables those recipes for ALL forces.
+--This is designed to be safe to use with other mods, so if a recipe doesn't exist,
+--this function skips that recipe instead of causing an error.
+--@param arrayOfRecipes	A table where the values are the names of recipe prototypes.
+--					In this implementation, the keys of the table don't matter.
+--					If the recipe with the requested name doesn't exist, silently skips that entry.
+--@return nil
+function disable_recipes_for_all( arrayOfRecipes )
+	for _, force in pairs( game.forces ) do
+		local recipes = force.recipes
+		for _, recipeName in pairs( arrayOfRecipes ) do
+			local theRecipe = recipes[ recipeName ]
+			if theRecipe then
+				if theRecipe.enabled then
+					theRecipe.enabled = false
+				end
+			end
+		end
+	end
+end
+
 function initial_resources()
 	for _, player in pairs( game.players ) do
-		player.insert{ name = "iron-plate", count = 300 }
-		player.insert{ name = "copper-plate", count = 100 }
-		player.insert{ name = "stone-furnace", count = 10 }
-		player.insert{ name = "burner-mining-drill", count = 10 }
-		player.insert{ name = "solid-fuel", count = 50 }
+		player.insert({ name = "iron-plate", count = 300 })
+		player.insert({ name = "copper-plate", count = 100 })
+		player.insert({ name = "stone-furnace", count = 10 })
+		player.insert({ name = "burner-mining-drill", count = 10 })
+		player.insert({ name = "solid-fuel", count = 50 })
 	end
 end
 	
 function initial_recipes()
 	add_goal_item( "pistol", 3.75, 5, 20 )
 	add_goal_item( "firearm-magazine", 2, 40, 400 )
-
-	for _, force in pairs( game.forces ) do
-		local recipes = force.recipes
-	
-		--Logistics:
-		recipes[ "iron-chest" ].enabled = true
-		recipes[ "steel-chest" ].enabled = true
-		recipes[ "transport-belt" ].enabled = true
-		recipes[ "underground-belt" ].enabled = true
-		recipes[ "splitter" ].enabled = true
-		recipes[ "burner-inserter" ].enabled = true
-	
-		--Production:
-		recipes[ "burner-mining-drill" ].enabled = true
-		recipes[ "stone-furnace" ].enabled = true
-		recipes[ "burner-assembling-machine-1" ].enabled = true
-	
-		--Intermediate products:
-		recipes[ "iron-plate" ].enabled = true
-		recipes[ "copper-plate" ].enabled = true
-		recipes[ "steel-plate" ].enabled = true
-		recipes[ "iron-stick" ].enabled = true
-		recipes[ "iron-gear-wheel" ].enabled = true
-		recipes[ "stone-brick"].enabled = true;
-	
-		--Combat:
-		recipes[ "pistol" ].enabled = true
-		recipes[ "firearm-magazine" ].enabled = true
-	end
-	
+	enable_recipes_for_all({ 
+		--Logistics recipes:
+		"iron-chest", "steel-chest", "transport-belt", "underground-belt", "splitter", "burner-inserter",
+		--Production recipes:
+		"burner-mining-drill", "stone-furace", "burner-assembling-machine-1",
+		--Intermediate product recipes:
+		"iron-plate", "copper-plate", "steel-plate", "iron-stick", "iron-gear-wheel", "stone-brick",
+		--Combat recipes:
+		"pistol", "firearm-magazine" })
 	for _, player in pairs( game.players ) do
 		update_main_GUI_for_scenario( player )
 	end	
@@ -65,19 +86,14 @@ function on_find_shipwreck()
 end
 
 function unlock_eternity_ray()
-	for _, force in pairs( game.forces ) do
-		local recipes = force.recipes
-		recipes[ "military-supply-eternity-ray-structure" ].enabled = true
-		recipes[ "military-supply-eternity-ray-power-core" ].enabled = true
-		recipes[ "military-supply-eternity-ray-emitter" ].enabled = true
-		recipes[ "military-supply-eternity-ray" ].enabled = true
-	end
-	
+	enable_recipes_for_all({	"military-supply-eternity-ray-structure",
+						"military-supply-eternity-ray-power-core",
+						"military-supply-eternity-ray-emitter",
+						"military-supply-eternity-ray" })
 	for _, player in pairs( game.players ) do
 		--Now it will say that to win, the player must build the ETERNITY RAY.
 		update_main_GUI_for_final_objective( player )
 	end
-	
 	--Tell the scenario object to add zarnium crystals to the SUPPLY DROPOFF CHEST:
 	global.militarySupplyScenario.zarniumUnlocked = true
 end
@@ -116,10 +132,9 @@ function upgrades_after_speed_health()
 end
 
 function upgrades_after_car()
-	--If the mod Iron Sticks Gear is enabled, add an upgrade to unlock it:
-	--Otherwise, nothing happens.
+	--If the mod Iron Sticks Gear is active, add an upgrade to unlock the recipe from that mod.
 	if game.recipe_prototypes[ "advanced-iron-gear-wheel" ] then
-		--The mod Iron Sticks Gear is enabled!
+		--The mod Iron Sticks Gear is active!
 		add_upgrade_to_scenario_object( global.militarySupplyScenario, "iron-sticks-gear", "item/iron-stick", 600 )
 	end
 end
@@ -142,7 +157,7 @@ function upgrades_after_fast_belts()
 end
 
 function upgrades_after_fast_inserter()
-	--If Q's Cable-Making Mod is enabled, add an upgrade to unlock a better recipe:
+	--If Q's Cable-Making Mod is active, add an upgrade to unlock a better recipe:
 	if game.recipe_prototypes[ "advanced-cable1" ] then
 		add_upgrade_to_scenario_object( global.militarySupplyScenario, "better-cable-making", "recipe/advanced-cable1", 750 )
 	end
@@ -208,87 +223,54 @@ messageAssociatedFunctions =
 upgradeAssociatedFunctions =
 {
 	smg = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "submachine-gun" ].enabled = true
-		end
-		
+		enable_recipes_for_all({ "submachine-gun" })
 		add_goal_item( "submachine-gun", 16.25, 5, 20 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-smg" )
 		upgrades_after_smg()
 	end,
 	[ "piercing-ammo" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "piercing-rounds-magazine" ].enabled = true
-		end
-		
+		enable_recipes_for_all({ "piercing-rounds-magazine" })
 		add_goal_item( "piercing-rounds-magazine", 4.5, 40, 400 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-piercing-ammo" )
 		upgrades_after_piercing_ammo()
 	end,
 	wall = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "stone-wall" ].enabled = true
-			recipes[ "stone-brick" ].enabled = true
-			recipes[ "gate" ].enabled = true
-		end
-	
+		enable_recipes_for_all({ "stone-wall", "gate" })
 		add_goal_item( "stone-wall", 3.75, 20, 200 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-wall" )
 		upgrades_after_wall()
 	end,
 	[ "bam-2" ] = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "engine-unit" ].enabled = true
-			recipes[ "pipe" ].enabled = true
-			recipes[ "burner-assembling-machine-2" ].enabled = true
-		end
-		
+		--(Pipes are unlocked because they are required to craft engine units.)
+		enable_recipes_for_all({ "engine-unit", "pipe", "burner-assembling-machine-2" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-bam-2" )
 		upgrades_after_bam2()
 	end,
 	sulfur = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "burner-chemical-plant" ].enabled = true
-			recipes[ "sulfuric-acid" ].enabled = true
-			recipes[ "battery" ].enabled = true
+		enable_recipes_for_all({ "burner-chemical-plant", "sulfuric-acid", "battery",
 			--This dummy recipe doesn't show up in crafting menus, but it does make sulfur appear in
 			--listings of all unlocked items.
-			recipes[ "military-supply-dummy-enable-sulfur" ].enabled = true
-		end
+			"military-supply-dummy-enable-sulfur" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-sulfur1" )
 		--Tell the scenario object to add sulfur to the SUPPLY DROPOFF CHEST:
 		global.militarySupplyScenario.sulfurUnlocked = true
 	end,
 	repair = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "military-supply-repair-pack" ].enabled = true
-		end
+		enable_recipes_for_all({ "military-supply-repair-pack" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-repair" )
 		upgrades_after_repair()
 	end,
 	concrete = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "concrete" ].enabled = true
-			recipes[ "hazard-concrete" ].enabled = true
-			--Concrete needs water to craft.  Just in case the player doesn't have water, give him/her a way to get some:
-			recipes[ "pipe" ].enabled = true
-			recipes[ "pipe-to-ground" ].enabled = true
-			recipes[ "offshore-pump" ].enabled = true
-			if recipes[ "burner-offshore-pump" ] then
-				recipes[ "burner-offshore-pump" ].enabled = true
-			end
-		end
+		enable_recipes_for_all({ "concrete", "hazard-concrete",
+			--Concrete needs water to craft.  Just in case the player doesn't have water, unlock stuff to get it:
+			"pipe", "pipe-to-ground", "offshore-pump",
+			--Item from a mod:
+			"burner-offshore-pump" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-concrete" )
 		upgrades_after_concrete()
 	end,
 	[ "steel-furnace" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "steel-furnace" ].enabled = true
-		end
+		enable_recipes_for_all({ "steel-furnace" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-steel-furnace" )
 		upgrades_after_furnace()
 	end,
@@ -301,22 +283,11 @@ upgradeAssociatedFunctions =
 		upgrades_after_speed_health()
 	end,
 	[ "electricity-1" ] = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			--Note: the "pipe" recipe will already be enabled because it is included in one of this upgrade's prerequisites.
-			recipes[ "pipe-to-ground" ].enabled = true
-			recipes[ "boiler" ].enabled = true
-			recipes[ "steam-engine" ].enabled = true
-			recipes[ "offshore-pump" ].enabled = true
-			recipes[ "medium-electric-pole" ].enabled = true
-			recipes[ "small-lamp" ].enabled = true
-			recipes[ "inserter" ].enabled = true
-			recipes[ "copper-cable" ].enabled = true
-			recipes[ "electronic-circuit" ].enabled = true
-			if recipes[ "burner-offshore-pump" ] then
-				recipes[ "burner-offshore-pump" ].enabled = true
-			end
-		end
+		--Note: the "pipe" recipe will already be enabled because it is included in one of this upgrade's prerequisites.
+		enable_recipes_for_all({ "pipe-to-ground", "boiler", "steam-engine", "offshore-pump",
+			--Item from a mod:
+			"burner-offshore-pump",
+			"medium-electric-pole", "small-lamp", "inserter", "copper-cable", "electronic-circuit" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-electricity-1" )
 		upgrades_after_electricity_1()
 	end,
@@ -331,28 +302,16 @@ upgradeAssociatedFunctions =
 		end
 	end,
 	[ "iron-sticks-gear" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "advanced-iron-gear-wheel" ].enabled = true
-		end
+		enable_recipes_for_all({ "advanced-iron-gear-wheel" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-iron-sticks-gear" )
 	end,
 	[ "electricity-2" ] = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "assembling-machine-1" ].enabled = true
-			recipes[ "big-electric-pole" ].enabled = true
-			recipes[ "electric-mining-drill" ].enabled = true
-			recipes[ "radar" ].enabled = true
-		end
+		enable_recipes_for_all({ "assembling-machine-1", "big-electric-pole", "electric-mining-drill", "radar" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-electricity-2" )
 		upgrades_after_electricity_2()
 	end,
 	[ "fast-inserter" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "fast-inserter" ].enabled = true
-			force.recipes[ "filter-inserter" ].enabled = true
-			force.recipes[ "uncraft-burner-inserters" ].enabled = true
-		end
+		enable_recipes_for_all({ "fast-inserter", "filter-inserter", "uncraft-burner-inserters" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-fast-inserter" )
 		upgrades_after_fast_inserter()
 	end,
@@ -363,12 +322,7 @@ upgradeAssociatedFunctions =
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-follower-count-bonus" )
 	end,
 	[ "fast-belts" ] = function()
-		for _, force in pairs( game.forces ) do
-			local recipes = force.recipes
-			recipes[ "fast-transport-belt" ].enabled = true
-			recipes[ "fast-underground-belt" ].enabled = true
-			recipes[ "fast-splitter" ].enabled = true
-		end
+		enable_recipes_for_all({ "fast-transport-belt", "fast-underground-belt", "fast-splitter" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-red-belt" )
 		upgrades_after_fast_belts()
 	end,
@@ -380,33 +334,23 @@ upgradeAssociatedFunctions =
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-mining-prod-bonus" )
 	end,
 	[ "better-cable-making" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "advanced-cable1" ].enabled = true
-			
-			--Disable the old recipe:
-			force.recipes[ "copper-cable" ].enabled = false
-		end
+		enable_recipes_for_all({ "advanced-cable1" })
+		disable_recipes_for_all({ "copper-cable" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-better-cable-making" )
 	end,
 	[ "heavy-armor" ] = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "heavy-armor" ].enabled = true
-		end
+		enable_recipes_for_all({ "heavy-armor" })
 		add_goal_item( "heavy-armor", 87.5, 2, 5 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-heavy-armor" )
 	end,
 	grenade = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "grenade" ].enabled = true
-		end
+		enable_recipes_for_all({ "grenade" })
 		add_goal_item( "grenade", 5, 20, 200 )
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-grenade" )
 		upgrades_after_grenade()
 	end,
 	car = function()
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "car" ].enabled = true
-		end
+		enable_recipes_for_all({ "car" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-car" )
 		upgrades_after_car()
 	end,
@@ -424,14 +368,11 @@ upgradeAssociatedFunctions =
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-grenade-bonus-2" )
 	end,
 	turret = function()
+		enable_recipes_for_all({ "gun-turret" })
 		--Purchasing the turret renders the old pistol obsolete.
 		--(In truth, it was obsolete the moment we got the SMG, but now they will no longer be accepted as goal items.)
 		remove_goal_item( "pistol" )
 		add_goal_item( "gun-turret", 22.5, 15, 100 )
-		
-		for _, force in pairs( game.forces ) do
-			force.recipes[ "gun-turret" ].enabled = true
-		end
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-turret" )
 		
 		--Set to display the "pistol obsolete" message in a short while:
@@ -448,10 +389,9 @@ upgradeAssociatedFunctions =
 		upgrades_after_bullet_1()
 	end,
 	capsules = function()
+		enable_recipes_for_all({ "poison-capsule", "defender-capsule" })
+		--Allow 5 followers right from the start:
 		for _, force in pairs( game.forces ) do
-			force.recipes[ "poison-capsule" ].enabled = true
-			force.recipes[ "defender-capsule" ].enabled = true
-			--Allow 5 followers right from the start:
 			force.maximum_following_robot_count = 5
 		end
 		add_goal_item( "poison-capsule", 7.5, 10, 200 )
