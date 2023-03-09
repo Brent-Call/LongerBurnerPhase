@@ -267,6 +267,9 @@ upgradeAssociatedFunctions =
 			recipes[ "burner-chemical-plant" ].enabled = true
 			recipes[ "sulfuric-acid" ].enabled = true
 			recipes[ "battery" ].enabled = true
+			--This dummy recipe doesn't show up in crafting menus, but it does make sulfur appear in
+			--listings of all unlocked items.
+			recipes[ "military-supply-dummy-enable-sulfur" ].enabled = true
 		end
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-sulfur1" )
 		--Tell the scenario object to add sulfur to the SUPPLY DROPOFF CHEST:

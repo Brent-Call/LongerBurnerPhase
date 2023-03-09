@@ -69,4 +69,15 @@ data:extend({
 	},
 	result = "military-supply-eternity-ray"
 },
+{
+	type = "recipe",
+	name = "military-supply-dummy-enable-sulfur",
+	category = "crafting",
+	enabled = false,
+	energy_required = 0.5,
+	ingredients = {},
+	result = "sulfur",
+	allow_as_intermediate = false,
+	hidden = true
+}
 })
