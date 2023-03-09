@@ -551,6 +551,6 @@ upgradeAssociatedFunctions =
 --@param player	A LuaPlayer object.  The player's data, along with some global game
 --				data, will be used to calculate the seed using a mathematical function.
 function seed_RNG( package, player )
-	math.randomseed( game.tick + integerValueOfPackageChosen * 599 +
+	math.randomseed( game.tick + package * 599 +
 		player.position.x * 8819 + ( player.position.y ^ 2 ) * 13921 )
 end
