@@ -544,3 +544,13 @@ upgradeAssociatedFunctions =
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-laser-turret" )
 	end
 }
+
+--Sets the seed for the Lua random number generator based on some information.
+--@param package	A number.  Technically it doesn't matter, but customarily we use
+--				a value corresponding to the starter package that was chosen.
+--@param player	A LuaPlayer object.  The player's data, along with some global game
+--				data, will be used to calculate the seed using a mathematical function.
+function seed_RNG( package, player )
+	math.randomseed( game.tick + integerValueOfPackageChosen * 599 +
+		player.position.x * 8819 + ( player.position.y ^ 2 ) * 13921 )
+end

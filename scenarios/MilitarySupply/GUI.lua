@@ -595,7 +595,9 @@ function receive_starter_package( player, packageChosen )
 
 	--Keep track of if we have to destroy the Starter Package GUI for good.
 	local toDestroyGUI = false
-	
+	--This will be used to help seed the RNG.
+	local integerValueOfPackageChosen = 0
+
 	if packageChosen == "logistics" then
 		toDestroyGUI = true
 		player.print{ "military-supply-scenario-thoughts.thoughts-choose-logistics" }
@@ -607,8 +609,7 @@ function receive_starter_package( player, packageChosen )
 		
 		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
 
-		--Consume 1 random value from the RNG, to provide replay variety:
-		local dummy = math.random()
+		integerValueOfPackageChosen = 1
 	elseif packageChosen == "production" then
 		toDestroyGUI = true
 		player.print{ "military-supply-scenario-thoughts.thoughts-choose-production" }
@@ -622,9 +623,7 @@ function receive_starter_package( player, packageChosen )
 		
 		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
 		
-		--Consume 2 random values from the RNG, to provide replay variety:
-		local dummy = math.random()
-		dummy = math.random()
+		integerValueOfPackageChosen = 2
 	elseif packageChosen == "combat" then
 		toDestroyGUI = true
 		player.print{ "military-supply-scenario-thoughts.thoughts-choose-combat" }
@@ -647,10 +646,12 @@ function receive_starter_package( player, packageChosen )
 		
 		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
 
-		--Consume 3 random values from the RNG, to provide replay variety:
-		local dummy = math.random()
-		dummy = math.random()
-		dummy = math.random()
+		integerValueOfPackageChosen = 3
+	end
+
+	if integerValueOfPackageChosen > 0 then
+		--Seed the RNG based off the player's movements & the starter package chosen:
+		seed_RNG( integerValueOfPackageChosen, player )
 	end
 
 	if toDestroyGUI then
