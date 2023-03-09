@@ -8,8 +8,8 @@ data:extend({
 	energy_required = 0.5,
 	ingredients =
 	{
-		{ "iron-gear-wheel", 2 },
-		{ "copper-plate", 3 }
+		{ "copper-plate", 3 },
+		{ "iron-gear-wheel", 3 }
 	},
 	result = "repair-pack"
 },
@@ -49,9 +49,9 @@ data:extend({
 	energy_required = 5,
 	ingredients =
 	{
-		{ "laser-turret", 3 },
+		{ "military-supply-zarnium-crystal", 20 },
 		{ "engine-unit", 10 },
-		{ "military-supply-zarnium-crystal", 20 }
+		{ "gun-turret", 5 }
 	},
 	result = "military-supply-eternity-ray-emitter"
 },
