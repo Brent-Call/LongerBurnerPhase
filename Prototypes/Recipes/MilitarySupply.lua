@@ -69,6 +69,9 @@ data:extend({
 	},
 	result = "military-supply-eternity-ray"
 },
+--This recipe exists only to make sulfur show up in item selection menus
+--(such as inventory slot filters or the filter inserter GUI) once sulfur has been unlocked
+--in the MilitarySupply scenario.
 {
 	type = "recipe",
 	name = "military-supply-dummy-enable-sulfur",
@@ -78,6 +81,6 @@ data:extend({
 	ingredients = {},
 	result = "sulfur",
 	allow_as_intermediate = false,
-	hidden = true
+	hidden = true --Do not show this recipe in any crafting menus.
 }
 })
