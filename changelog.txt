@@ -6,6 +6,7 @@ Date: 04. 03. 2023
     - MilitarySupply: Tweaked the amount of items requested per order.
     - MilitarySuuply: Armor upgrades no longer grant inventory size bonuses.  Reduced the prices of the upgrades to compensate.
   Changes:
+    - Tweaked some descriptions and some dialogue for the scenario.
     - MilitarySupply: Research is now disabled for all forces, not just the player's force.  I expect this never to be relevant.
     - MilitarySupply: The day-night cycle now has a period of 15 minutes.
     - MilitarySupply: Choosing the combat starter package now gives an armor with nightvision equipment installed.
