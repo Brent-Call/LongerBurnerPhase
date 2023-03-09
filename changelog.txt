@@ -12,7 +12,8 @@ Date: 04. 03. 2023
     - Military Supply: The day-night cycle now has a period of 15 minutes.
     - Military Supply: Choosing the combat starter package now gives an armor with nightvision equipment installed.
     - Military Supply: Overhauled various parts of the code.  Most of you won't care, but I did it anyways.
-    - Military Supply: Solar panels, laser turrets, and circuit network have been removed.
+    - Military Supply: Solar panels, laser turrets, and circuit network upgrades have been removed.
+    - Military Supply: Added an upgrade to unlock refined concrete.
   Gui:
     - Military Supply: Completely redesigned most of the GUIs in the scenario.
 ---------------------------------------------------------------------------------------------------

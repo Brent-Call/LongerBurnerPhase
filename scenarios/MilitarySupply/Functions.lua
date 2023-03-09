@@ -106,6 +106,7 @@ function on_killed_spawner()
 end
 
 function upgrades_after_concrete()
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "refined-concrete", "item/refined-concrete", 600 )
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "sulfur", "item/sulfur", 700 )
 end
 
@@ -268,6 +269,10 @@ upgradeAssociatedFunctions =
 			"burner-offshore-pump" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-concrete" )
 		upgrades_after_concrete()
+	end,
+	[ "refined-concrete" ] = function()
+		enable_recipes_for_all({ "refined-concrete", "refined-hazard-concrete" })
+		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-refined-concrete" )
 	end,
 	[ "steel-furnace" ] = function()
 		enable_recipes_for_all({ "steel-furnace" })
