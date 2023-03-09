@@ -260,26 +260,21 @@ script.on_init( function()
 	
 	--Make the day 15 minutes long, which is longer than by default.
 	game.surfaces[ 1 ].ticks_per_day = 60 * 60 * 15
+
+	
+	--Disable all recipes & disable research for all forces.
+	for _, force in pairs( game.forces ) do
+		force.disable_all_prototypes()
+		force.disable_research()
+	end
 	
 	set_next_message_of_scenario_object( mS, 60, "thoughts-initial1" )
-
-	--Disable research for all forces.
-	--I assume that no new forces are going to be created partway through the scenario.
-	for _, v in pairs( game.forces ) do
-		v.disable_research()
-	end
 end )
 
 script.on_event( defines.events.on_player_created, function( event )
 	local player = game.players[ event.player_index ]
 	
 	create_main_GUI( player )
-
-	--Disable all recipes:
-	--We assume that this command is only triggered once: at the very beginning of the scenario.
-	for k, v in pairs( player.force.recipes ) do
-		v.enabled = false
-	end
 end )
 
 script.on_event( defines.events.on_tick, function( event )
