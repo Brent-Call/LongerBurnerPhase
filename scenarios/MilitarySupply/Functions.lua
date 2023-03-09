@@ -59,7 +59,7 @@ function initial_recipes()
 		--Logistics recipes:
 		"iron-chest", "steel-chest", "transport-belt", "underground-belt", "splitter", "burner-inserter",
 		--Production recipes:
-		"burner-mining-drill", "stone-furace", "burner-assembling-machine-1",
+		"burner-mining-drill", "stone-furnace", "burner-assembling-machine-1",
 		--Intermediate product recipes:
 		"iron-plate", "copper-plate", "steel-plate", "iron-stick", "iron-gear-wheel", "stone-brick",
 		--Combat recipes:
