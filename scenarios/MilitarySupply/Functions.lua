@@ -126,7 +126,7 @@ end
 
 function upgrades_after_electricity_1()
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "electricity-2", "item/assembling-machine-1", 525 )
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "fast-inserter", "item/fast-inserter", 150 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "fast-inserter", "item/fast-inserter", 600 )
 end
 
 function upgrades_after_capsules()
@@ -134,7 +134,7 @@ function upgrades_after_capsules()
 end
 
 function upgrades_after_electricity_2()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "fast-belts", "item/fast-transport-belt", 550 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "fast-belts", "item/fast-transport-belt", 1000 )
 end
 
 function upgrades_after_fast_belts()
