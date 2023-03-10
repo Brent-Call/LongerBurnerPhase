@@ -21,3 +21,7 @@ data.raw.recipe[ "uncraft-burner-lab" ].subgroup = "laboratory"
 data.raw.recipe[ "uncraft-burner-lab" ].order = "b[ uncraft-burner-lab ]"
 data.raw.item[ "lab" ].subgroup = "laboratory"
 data.raw.item[ "lab" ].order = "c[ lab ]"
+if data.raw.item[ "Q-AICore:ai-core" ] then
+	data.raw.item[ "Q-AICore:ai-core" ].subgroup = "laboratory"
+	data.raw.item[ "Q-AICore:ai-core" ].order = "d[ ai-core ]"
+end
