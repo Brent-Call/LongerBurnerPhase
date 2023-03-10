@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.0
 Date: 04. 03. 2023
+  Graphics:
+    - New icons for the recipes that recycle items.
   Balancing:
     - Increased mining radius of advanced burner mining drill to make building new mining setups easier.  This may break existing mining setups if you have mixed ores.
     - Military Supply: Tweaked the amount of items requested per order.
