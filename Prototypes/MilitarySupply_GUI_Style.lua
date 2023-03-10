@@ -1,5 +1,5 @@
 --MilitarySupply_GUI_Style.lua
---This file contains GUI styles specifically for the MilitarySupply scenario.
+--This file contains GUI styles specifically for the Military Supply scenario.
 
 --This frame_style is used for a light-gray colored inner frame with padding along the edges & vertical spacing
 --on the elements inside.

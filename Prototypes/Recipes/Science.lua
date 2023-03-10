@@ -41,8 +41,18 @@ data:extend({
 {
 	type = "recipe",
 	name = "uncraft-burner-lab",
-	icon = "__LongerBurnerPhase__/Graphics/Items/burner-lab.png",
-	icon_size = 32,
+	icons = 
+	{
+		{
+			icon = "__LongerBurnerPhase__/Graphics/Items/burner-lab.png",
+			icon_size = 32
+		},
+		{
+			icon = "__LongerBurnerPhase__/Graphics/Recipes/dismantle.png",
+			icon_size = 64,
+			scale = 0.5
+		}
+	},
 	subgroup = "production-machine",
 	category = "crafting",
 	enabled = false,

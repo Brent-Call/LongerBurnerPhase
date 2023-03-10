@@ -2,7 +2,7 @@ data:extend({
 {
 	type = "recipe",
 	name = "air-filter",
-	--Air filters cannot be crafted by hand:
+	--Air filters cannot be crafted by hand; they must be crafted by machine.
 	category = "advanced-crafting",
 	enabled = false,
 	emissions_multiplier = 0.7,
@@ -313,8 +313,18 @@ data:extend({
 {
 	type = "recipe",
 	name = "uncraft-burner-inserters",
-	icon = data.raw.item[ "burner-inserter" ].icon,
-	icon_size = data.raw.item[ "burner-inserter" ].icon_size,
+	icons =
+	{
+		{
+			icon = data.raw.item[ "burner-inserter" ].icon,
+			icon_size = data.raw.item[ "burner-inserter" ].icon_size
+		},
+		{
+			icon = "__LongerBurnerPhase__/Graphics/Recipes/dismantle.png",
+			icon_size = 64,
+			scale = 0.5
+		}
+	},
 	subgroup = "inserter",
 	order = "a[burner-inserter]-b",
 	category = "crafting",

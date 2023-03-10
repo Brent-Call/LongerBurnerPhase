@@ -1,7 +1,7 @@
---A simple constant, equal to the map color of the MilitarySupply chests:
+--A simple constant, equal to the map color of the Military Supply chests:
 local MILITARY_SUPPLY_CHEST_MAP_COLOR = { r = 1.0, g = 1.0, b = 1.0 }
 
---The following entities are used in the MilitarySupply scenario, included with this mod:
+--The following entities are used in the Military Supply scenario, included with this mod:
 data:extend({
 {
 	type = "container",

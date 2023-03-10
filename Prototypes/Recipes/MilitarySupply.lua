@@ -1,6 +1,8 @@
 --The following recipeies are used only in the Military Supply scenario:
 data:extend({
 {
+	--This is a version of the normal recipe for repair packs,
+	--but it doesn't require electronic circuits to craft.
 	type = "recipe",
 	name = "military-supply-repair-pack",
 	category = "crafting",
@@ -71,7 +73,7 @@ data:extend({
 },
 --This recipe exists only to make sulfur show up in item selection menus
 --(such as inventory slot filters or the filter inserter GUI) once sulfur has been unlocked
---in the MilitarySupply scenario.
+--in the Military Supply scenario.
 {
 	type = "recipe",
 	name = "military-supply-dummy-enable-sulfur",
