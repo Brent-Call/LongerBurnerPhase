@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.2.4
+Version: 1.3.0
 Date: 04. 03. 2023
   Balancing:
     - Increased mining radius of advanced burner mining drill to make building new mining setups easier.  This may break existing mining setups if you have mixed ores.
