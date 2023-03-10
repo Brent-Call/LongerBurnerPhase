@@ -269,6 +269,20 @@ script.on_init( function()
 		force.disable_all_prototypes()
 		force.disable_research()
 	end
+
+	--Easter Eggs time!
+	local doEff = game.active_mods[ "Efficiency_Module_Rebalance" ] ~= nil
+	local doIns = game.item_prototypes[ "Q-InserterModule:inserter-module-3" ] ~= nil
+	if doEff or doIns then
+		local chest = game.surfaces[ 1 ].create_entity({
+			name = "steel-chest", position = { x = -404, y = 152 }, force = "player" })
+		if doIns then
+			chest.insert({ name = "Q-InserterModule:inserter-module-3", count = 2 })
+		end
+		if doEff then
+			chest.insert({ name = "effectivity-module", count = 2 })
+		end
+	end
 	
 	set_next_message_of_scenario_object( mS, 60, "thoughts-initial1" )
 end )
