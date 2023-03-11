@@ -106,7 +106,8 @@ function on_killed_spawner()
 end
 
 function upgrades_after_concrete()
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "refined-concrete", "item/refined-concrete", 600 )
+	--Turn refined concrete off because there aren't any machines that can craft it in this scenario.
+	--add_upgrade_to_scenario_object( global.militarySupplyScenario, "refined-concrete", "item/refined-concrete", 600 )
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "sulfur", "item/sulfur", 700 )
 end
 

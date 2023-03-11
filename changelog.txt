@@ -15,7 +15,8 @@ Date: 10. 03. 2023
     - Military Supply: Choosing the combat starter package now gives an armor with nightvision equipment installed.
     - Military Supply: Overhauled various parts of the code.  Most of you won't care, but I did it anyways.
     - Military Supply: Solar panels, laser turrets, and circuit network upgrades have been removed.
-    - Military Supply: Added an upgrade to unlock refined concrete & an additional mining productivity upgrade.
+    - Military Supply: Added an additional mining productivity upgrade.
+    - Military Supply: After a certain point, the scenario will no longer ask for basic firearm magazines.
   Gui:
     - Military Supply: Completely redesigned most of the GUIs in the scenario.
 ---------------------------------------------------------------------------------------------------
