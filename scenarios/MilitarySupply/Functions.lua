@@ -451,3 +451,136 @@ function seed_RNG( package, player )
 	math.randomseed( game.tick + package * 599 +
 		player.position.x * 8819 + ( player.position.y ^ 2 ) * 13921 )
 end
+
+--Creates the table of all data related to starter packages, overwriting whatever was in global.starterPackages in the process.
+--Call this once, at the beginning of the scenario.
+--global.starterPackages is an array of starter package data structures.
+--A starter package data structure has the following fields:
+--	localisedName -- LocalisedString.  Displayed as the name of the starter package.
+--	messageWhenChosen -- LocalisedString.  Printed to the console when the starter package is chosen.
+--	sprite -- SpritePath.  Image associated with this starter package.
+--	contents -- Table.  Array of the starter package item data structures.
+--A starter package item data structure has the following fields:
+--	type -- String.  Determines the behavior of this entry.  The types are:
+--			"item" -- When the starter package is chosen, the item will go into the character's inventory.
+--			"crafting-speed-modifier" -- The player who chose this will get a bonus to manual crafting speed.
+--							The bonus wears off when they die.
+--			"armor-with-equipment" -- When the starter package is chosen, the player will get armor with
+--							plenty of useful equipment in their equipment grid.  This is all predefined.
+--			"force-map-chart" -- When the starter package is chosen, the player's force will chart an area of the map.
+--							The surface charted will be the surface the player is currently located on.
+--	item -- String.  Name of the item prototype to use.  Used if type is "item".
+--	count -- Number.  Amount of items given.  Used if type is "item".
+--	modifier -- Number.  Amount of modifier to give.  Used if type is "crafting-speed-modifier".
+--	area -- BoundingBox.  Area of the world to be charted.  Used if type is "force-map-chart".
+function initialize_starter_packages()
+	global.starterPackages =
+	{
+		--Logistics starter package:
+		{
+			localisedName = { "military-supply-scenario-gui.starter-package-logistics" },
+			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-logistics" },
+			sprite = "item-group/logistics",
+			contents =
+			{
+				{ type = "item", item = "transport-belt", count = 100 },
+				{ type = "item", item = "underground-belt", count = 10 },
+				{ type = "item", item = "splitter", count = 10 },
+				{ type = "item", item = "burner-inserter", count = 25 },
+				{ type = "item", item = "steel-chest", count = 10 }
+			}
+		},
+		--Production starter package:
+		{
+			localisedName = { "military-supply-scenario-gui.starter-package-production" },
+			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-production" },
+			sprite = "item-group/production",
+			contents =
+			{
+				{ type = "item", item = "burner-assembling-machine-1", count = 5 },
+				{ type = "item", item = "burner-mining-drill", count = 10 },
+				{ type = "item", item = "stone-furnace", count = 40 },
+				{ type = "item", item = "burner-inserter", count = 10 },
+				{ type = "crafting-speed-modifier", modifier = 0.5 }
+			}
+		},
+		--Combat starter package:
+		{
+			localisedName = { "military-supply-scenario-gui.starter-package-combat" },
+			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-combat" },
+			sprite = "item-group/combat",
+			contents =
+			{
+				{ type = "item", item = "uranium-rounds-magazine", count = 200 },
+				{ type = "item", item = "grenade", count = 20 },
+				{ type = "item", item = "stone-wall", count = 100 },
+				{ type = "armor-with-equipment" },
+				{ type = "force-map-chart", area = {{ -400, -400 }, { 200, 200 }}}
+			}
+		}
+	}
+end
+
+--Gives to the player all the gear, equipment, & stuff as part of the [index]th starter package.
+--@param player	The LuaPlayer object to act on.
+--@param index		A number specifying which starter package to give to the player.
+--@return nil
+function apply_bonuses_from_starter_package( player, index )
+	if type( global.starterPackages ) ~= "table" then
+		error( "Can\'t receive a starter package when no starter packages are defined!" )
+	end
+	local starterPackage = global.starterPackages[ index ]
+	if not starterPackage then
+		error( "The requested starter package does not exist!" )
+	end
+	local contents = starterPackage.contents
+	if not contents or #contents < 1 then
+		error( "The requested starter package has no contents!" )
+	end
+	if not player.character then
+		error( "The player had no character to receive the starter package!" )
+	end
+
+	--Loop through all bonuses in the requested starter package & grant those.
+	for _, v in ipairs( contents ) do
+		if type( v.type ) ~= "string" then
+			error( "Paramater \"type\" was invalid.  String expected, got "..type( v.type ).."." )
+		end
+		if v.type == "item" then
+			if type( v.item ) ~= "string" then
+				error( "Paramater \"item\" was invalid.  String expected, got "..type( v.item ).."." )
+			end
+			if type( v.count ) ~= "number" then
+				error( "Paramater \"count\" was invalid.  Number expected, got "..type( v.count ).."." )
+			end
+			--Else: valid.
+			player.insert({ name = v.item, count = v.count })
+		elseif v.type == "crafting-speed-modifier" then
+			if type( v.modifier ) ~= "number" then
+				error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
+			end
+			--Else: valid.
+			player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + v.modifier
+		elseif v.type == "armor-with-equipment" then
+			player.insert({ name = "modular-armor", count = 1 })
+			--Put the equipment inside the modular armor's equipment grid:
+			local grid = player.get_inventory( defines.inventory.character_armor )[ 1 ].grid
+			grid.put({ name = "night-vision-equipment", by_player = player })
+			grid.put({ name = "energy-shield-equipment", by_player = player })
+			grid.put({ name = "belt-immunity-equipment", by_player = player })
+			grid.put({ name = "solar-panel-equipment", by_player = player })
+			grid.put({ name = "battery-mk2-equipment", by_player = player })
+			grid.put({ name = "battery-mk2-equipment", by_player = player })
+			for n = 1, 11 do
+				grid.put({ name = "solar-panel-equipment", by_player = player })
+			end
+		elseif v.type == "force-map-chart" then
+			player.force.chart( player.surface, v.area )
+		else
+			error( "Paramater \"type\" was not one of the predefined valid values." )
+		end
+	end
+
+	--The character will have some thoughts or comments on the starter package chosen.
+	player.print( starterPackage.messageWhenChosen )
+end

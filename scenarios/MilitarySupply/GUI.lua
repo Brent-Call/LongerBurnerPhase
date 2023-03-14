@@ -1,3 +1,5 @@
+require( "util" )
+
 --The name of the top-level LuaGuiElement for the scoring GUI:
 SCORING_GUI_TOP_LEVEL_NAME = "MilitarySupply:scoring"
 STARTER_PACKAGE_GUI_TOP_LEVEL_NAME = "MilitarySupply:starter-package"
@@ -6,9 +8,7 @@ CLOSE_BUTTON_FOR_SCORING_GUI = "totally-unique-string-{a9b462b5-836e-4d5e-ae5a-3
 CLOSE_BUTTON_FOR_STARTER_PACKAGE_GUI = "totally-unique-string-{5fda0d85-2c0b-4aaa-aaf2-0aebca71c47a}"
 CLOSE_BUTTON_FOR_SHOP_GUI = "totally-unique-string-{5f9e3bc6-d1f7-43df-907b-04e35b941bb5}"
 BUTTON_TO_OPEN_STARTER_PACKAGE_GUI = "totally-unique-string-{a2cbb4d2-e432-4b0e-97ee-08b6c061e6fd}"
-BUTTON_TO_SELECT_LOGISTICS_STARTER_PACKAGE = "totally-unique-string-{92b44beb-c1c9-4a35-9406-1499bf4a235d}"
-BUTTON_TO_SELECT_PRODUCTION_STARTER_PACKAGE = "totally-unique-string-{c28c6371-d427-438c-8287-4da2ff10396f}"
-BUTTON_TO_SELECT_COMBAT_STARTER_PACKAGE = "totally-unique-string-{358ca26f-1045-43e9-b5a0-d8813d8e0dcc}"
+BUTTON_TO_SELECT_STARTER_PACKAGE = "totally-unique-string-{92b44beb-c1c9-4a35-9406-1499bf4a235d}"
 BUTTON_TO_DESELECT_STARTER_PACKAGE = "totally-unique-string-{b52bdf0b-161e-4edd-ac41-734cba2e519d}"
 BUTTON_TO_CONFIRM_STARTER_PACKAGE = "totally-unique-string-{2fb84d06-9dd0-4602-a25f-6b61cc533bc3}"
 BUTTON_TO_TOGGLE_GOALS_GUI = "totally-unique-string-{9ded18ac-e28d-497d-9f92-8994bff5a7f7}"
@@ -450,58 +450,15 @@ function create_starter_package_GUI( player )
 	titlebar.add({ type = "sprite-button", name = CLOSE_BUTTON_FOR_STARTER_PACKAGE_GUI, sprite = "utility/close_white", hovered_sprite = "utility/close_black", clicked_sprite = "utility/close_black", style = "close_button" })
 
 	local list = starterPackageGUI.add({ type = "frame", name = "list-of-packages", direction = "vertical", style = "inside_shallow_frame" })
-	list.add({ type = "flow", name = "logistics", direction = "horizontal", style = "centering_horizontal_flow" })
-	list.add({ type = "flow", name = "production", direction = "horizontal", style = "centering_horizontal_flow" })
-	list.add({ type = "flow", name = "combat", direction = "horizontal", style = "centering_horizontal_flow" })
 
-	list.logistics.add({ type = "sprite-button", name = BUTTON_TO_SELECT_LOGISTICS_STARTER_PACKAGE, sprite = "item-group/logistics", style = "Q-LongerBurnerPhase:slot_button_64px" })
-	list.logistics.add({ type = "label", name = "label-logistics", caption = { "military-supply-scenario-gui.starter-package-logistics" }})
-	list.production.add({ type = "sprite-button", name = BUTTON_TO_SELECT_PRODUCTION_STARTER_PACKAGE, sprite = "item-group/production", style = "Q-LongerBurnerPhase:slot_button_64px" })
-	list.production.add({ type = "label", name = "label-production", caption = { "military-supply-scenario-gui.starter-package-production" }})
-	list.combat.add({ type = "sprite-button", name = BUTTON_TO_SELECT_COMBAT_STARTER_PACKAGE, sprite =  "item-group/combat", style = "Q-LongerBurnerPhase:slot_button_64px" })
-	list.combat.add({ type = "label", name = "label-combat", caption = { "military-supply-scenario-gui.starter-package-combat" }})
-
-	--Helper function for creating previews of the Starter Packages:
-	local function add_preview_item( itemName, quantity, frame )
-		local flow = frame.add({ type = "flow", direction = "horizontal", style = "centering_horizontal_flow" })
-		--We use a sprite button to represent a quantity of an item that doesn't physically exist yet in the world.
-		--Since the button is not meant to be clicked on, we set it to ignore interaction.
-		--Sprite buttons are the only GUI element that supports drawing a number on it.
-		flow.add({ type = "sprite-button", sprite = "item/"..itemName, number = quantity, ignored_by_interaction = true, style = "slot_button" })
-		flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-preview-item-qty",
-			game.item_prototypes[ itemName ].localised_name, quantity }})
-	end
-	
-	--Helper function for creating previews of the Starter Packages:
-	local function add_preview_bonus( spr, localisedString, frame )
-		local flow = frame.add({ type = "flow", direction = "horizontal", style = "centering_horizontal_flow" })
-		flow.add({ type = "sprite", sprite = spr, style = "tool_equip_equipment_image" })
-		flow.add({ type = "label", caption = localisedString })
+	--Loop through all starter packages & add a list entry for each:
+	for i, sp in ipairs( global.starterPackages ) do
+		local flow = list.add({ type = "flow", name = "package-"..i, direction = "horizontal", style = "centering_horizontal_flow" })
+		flow.add({ type = "sprite-button", name = BUTTON_TO_SELECT_STARTER_PACKAGE..i, sprite = sp.sprite, style = "Q-LongerBurnerPhase:slot_button_64px" })
+		flow.add({ type = "label", name = "name-of-"..i, caption = sp.localisedName })
 	end
 
-	local logistics = starterPackageGUI.add({ type = "frame", name = "logistics-preview", direction = "vertical", style = "inside_shallow_frame_with_padding" })
-	add_preview_item( "transport-belt", 100, logistics )
-	add_preview_item( "underground-belt", 10, logistics )
-	add_preview_item( "splitter", 10, logistics )
-	add_preview_item( "burner-inserter", 25, logistics )
-	add_preview_item( "steel-chest", 10, logistics )
-	logistics.visible = false
-
-	local production = starterPackageGUI.add({ type = "frame", name = "production-preview", direction = "vertical", style = "inside_shallow_frame_with_padding" })
-	add_preview_item( "burner-assembling-machine-1", 5, production )
-	add_preview_item( "burner-mining-drill", 10, production )
-	add_preview_item( "stone-furnace", 40, production )
-	add_preview_item( "burner-inserter", 10, production )
-	add_preview_bonus( "entity/character", { "military-supply-scenario-gui.starter-package-crafting-bonus" }, production )
-	production.visible = false
-
-	local combat = starterPackageGUI.add({ type = "frame", name = "combat-preview", direction = "vertical", style = "inside_shallow_frame_with_padding" })
-	add_preview_item( "uranium-rounds-magazine", 200, combat )
-	add_preview_item( "grenade", 20, combat )
-	add_preview_item( "stone-wall", 100, combat )
-	add_preview_bonus( "item/modular-armor", { "military-supply-scenario-gui.starter-package-armor" }, combat )
-	add_preview_bonus( "item/radar", { "military-supply-scenario-gui.starter-package-map-scan" }, combat )
-	combat.visible = false
+	starterPackageGUI.add({ type = "frame", name = "preview", direction = "vertical", visible = false, style = "inside_shallow_frame_with_padding" })
 
 	local footer = starterPackageGUI.add({ type = "flow", name = "footer", direction = "horizontal", style = "dialog_buttons_horizontal_flow", visible = false })
 	footer.add({ type = "button", name = BUTTON_TO_DESELECT_STARTER_PACKAGE, caption = { "gui.cancel" }, style = "back_button" })
@@ -538,8 +495,7 @@ end
 
 --Opens a page showing more details about the chosen starter package, or returns to the menu showing all starter packages.
 --@param player	The LuaPlayer on which to perform the GUI operations.
---@param packageChosen	If this is the string "logistics", "production", or "combat", then this function
---					opens a page showing the contents of the relevant starter package.
+--@param packageChosen	Number.  A value greater than zero will display the contents of a Starter Package.
 --					If this is anything else, then this function returns to showing all 3 starter
 --					packages so the player can choose one.
 function choose_starter_package( player, packageChosen )
@@ -548,42 +504,83 @@ function choose_starter_package( player, packageChosen )
 	if not GUI then
 		return
 	end
+
+	--In older versions of this mod, packageChosen was supposed to be a string.
+	--Test to make sure the new format is being followed.
+	if type( packageChosen ) ~= "number" then
+		error( "Paramater \"packageChosen\" was invalid.  Number expected, got "..type( packageChosen ).."." )
+	end
 	
-	--Here we assume that the GUI and everything in it is valid:
-	if packageChosen == "logistics" then
-		GUI.titlebar[ "titlebar-title" ].caption = { "military-supply-scenario-gui.starter-package-logistics" }
+	--Here we assume that the GUI and everything in it is valid.
+	if packageChosen > 0 then
+		local thePackage = global.starterPackages[ packageChosen ]
+
+		--Show/hide relevant parts of the GUI:
+		GUI[ "titlebar" ][ "titlebar-title" ].caption = thePackage.localisedName
 		GUI[ "list-of-packages" ].visible = false
-		GUI[ "logistics-preview" ].visible = true
-		GUI[ "production-preview" ].visible = false
-		GUI[ "combat-preview" ].visible = false
-		GUI.footer.visible = true
-	elseif packageChosen == "production" then
-		GUI.titlebar[ "titlebar-title" ].caption = { "military-supply-scenario-gui.starter-package-production" }
-		GUI[ "list-of-packages" ].visible = false
-		GUI[ "logistics-preview" ].visible = false
-		GUI[ "production-preview" ].visible = true
-		GUI[ "combat-preview" ].visible = false
-		GUI.footer.visible = true
-	elseif packageChosen == "combat" then
-		GUI.titlebar[ "titlebar-title" ].caption = { "military-supply-scenario-gui.starter-package-combat" }
-		GUI[ "list-of-packages" ].visible = false
-		GUI[ "logistics-preview" ].visible = false
-		GUI[ "production-preview" ].visible = false
-		GUI[ "combat-preview" ].visible = true
-		GUI.footer.visible = true
+		GUI[ "footer" ].visible = true
+
+		--Clear the preview & repopulate it from scratch:
+		local preview = GUI[ "preview" ]
+		preview.visible = true
+		preview.clear()
+
+		--We populate the GUI based on the data inside the table!
+		--Yay for data-based things!  Yay!  Data!  Supposed to be cleaner, better-organized code!
+		for _, v in ipairs( thePackage.contents ) do
+			--Each separate thing in the starter package corresponds with a row in the list:
+			local flow = preview.add({ type = "flow", direction = "horizontal", style = "centering_horizontal_flow" })
+
+			if type( v.type ) ~= "string" then
+				error( "Paramater \"type\" was invalid.  String expected, got "..type( v.type ).."." )
+			end
+			if v.type == "item" then
+				if type( v.item ) ~= "string" then
+					error( "Paramater \"item\" was invalid.  String expected, got "..type( v.item ).."." )
+				end
+				if type( v.count ) ~= "number" then
+					error( "Paramater \"count\" was invalid.  Number expected, got "..type( v.count ).."." )
+				end
+				--Else: valid.
+				--We use a sprite button to represent a quantity of an item that doesn't physically exist yet in the world.
+				--Since the button is not meant to be clicked on, we set it to ignore interaction.
+				--Sprite buttons are the only GUI element that supports drawing a number on it.
+				flow.add({ type = "sprite-button", sprite = "item/"..v.item, number = v.count,
+					ignored_by_interaction = true, style = "slot_button" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-preview-item-qty",
+					game.item_prototypes[ v.item ].localised_name, v.count }})
+			elseif v.type == "crafting-speed-modifier" then
+				if type( v.modifier ) ~= "number" then
+					error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
+				end
+				--Else: valid.
+				--We use the character sprite & calculate the percentage bonus.
+				flow.add({ type = "sprite", sprite = "entity/character", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-crafting-bonus", 100 * v.modifier }})
+			elseif v.type == "armor-with-equipment" then
+				--Remember, the armor & the equipment inside it are all predefined.
+				flow.add({ type = "sprite", sprite = "item/modular-armor", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-armor" }})
+			elseif v.type == "force-map-chart" then
+				--Remember, the armor & the equipment inside it are all predefined.
+				flow.add({ type = "sprite", sprite = "item/radar", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-force-map-chart" }})
+			else
+				error( "Paramater \"type\" was not one of the predefined valid values." )
+			end
+		end
 	else
-		GUI.titlebar[ "titlebar-title" ].caption = { "military-supply-scenario-gui.choose-starter-package" }
+		--Parameter packageChosen was 0 or negative.  That means "select no package."
+		GUI[ "titlebar" ][ "titlebar-title" ].caption = { "military-supply-scenario-gui.choose-starter-package" }
 		GUI[ "list-of-packages" ].visible = true
-		GUI[ "logistics-preview" ].visible = false
-		GUI[ "production-preview" ].visible = false
-		GUI[ "combat-preview" ].visible = false
-		GUI.footer.visible = false
+		GUI[ "preview" ].visible = false
+		GUI[ "footer" ].visible = false
 	end
 end
 
 --Grants the player the chosen Starter Package.  If successful, destroys the Starter Package GUI afterwards.
 --@param player	The LuaPlayer who will receive the chosen Starter Package.
---@param packageChosen	One of "logistics", "production", or "combat".
+--@param packageChosen	Number.  A value greater than zero will grant a Starter Package.
 --					Any other value will perform no action.
 function receive_starter_package( player, packageChosen )
 	local GUI = player.gui.screen[ STARTER_PACKAGE_GUI_TOP_LEVEL_NAME ]
@@ -593,68 +590,21 @@ function receive_starter_package( player, packageChosen )
 		return
 	end
 
-	--Keep track of if we have to destroy the Starter Package GUI for good.
-	local toDestroyGUI = false
-	--This will be used to help seed the RNG.
-	local integerValueOfPackageChosen = 0
-
-	if packageChosen == "logistics" then
-		toDestroyGUI = true
-		player.print{ "military-supply-scenario-thoughts.thoughts-choose-logistics" }
-		player.insert{ name = "transport-belt", count = 100 }
-		player.insert{ name = "underground-belt", count = 10 }
-		player.insert{ name = "splitter", count = 10 }
-		player.insert{ name = "burner-inserter", count = 25 }
-		player.insert{ name = "steel-chest", count = 10 }
-		
-		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
-
-		integerValueOfPackageChosen = 1
-	elseif packageChosen == "production" then
-		toDestroyGUI = true
-		player.print{ "military-supply-scenario-thoughts.thoughts-choose-production" }
-		player.insert{ name = "burner-assembling-machine-1", count = 5 }
-		player.insert{ name = "burner-mining-drill", count = 10 }
-		player.insert{ name = "stone-furnace", count = 40 }
-		player.insert{ name = "burner-inserter", count = 10 }
-		if player.character then
-			player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + 0.5
-		end
-		
-		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
-		
-		integerValueOfPackageChosen = 2
-	elseif packageChosen == "combat" then
-		toDestroyGUI = true
-		player.print{ "military-supply-scenario-thoughts.thoughts-choose-combat" }
-		player.insert{ name = "uranium-rounds-magazine", count = 200 }
-		player.insert{ name = "grenade", count = 20 }
-		player.insert{ name = "stone-wall", count = 100 }	
-		player.insert{ name = "modular-armor", count = 1 }
-		--Put equipment inside of the modular armor:
-		local grid = player.get_inventory( defines.inventory.character_armor )[ 1 ].grid
-		grid.put({ name = "night-vision-equipment", by_player = player })
-		grid.put({ name = "energy-shield-equipment", by_player = player })
-		grid.put({ name = "belt-immunity-equipment", by_player = player })
-		grid.put({ name = "solar-panel-equipment", by_player = player })
-		grid.put({ name = "battery-mk2-equipment", by_player = player })
-		grid.put({ name = "battery-mk2-equipment", by_player = player })
-		for n = 1, 11 do
-			grid.put({ name = "solar-panel-equipment", by_player = player })
-		end
-		player.force.chart( 1, {{ -400, -400 }, { 200, 200 }})
-		
-		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
-
-		integerValueOfPackageChosen = 3
+	--In older versions of this mod, packageChosen was supposed to be a string.
+	--Test to make sure the new format is being followed.
+	if type( packageChosen ) ~= "number" then
+		error( "Paramater \"packageChosen\" was invalid.  Number expected, got "..type( packageChosen ).."." )
 	end
 
-	if integerValueOfPackageChosen > 0 then
+	if packageChosen > 0 then
+		apply_bonuses_from_starter_package( player, packageChosen )
+		
+		set_next_message_of_scenario_object( global.militarySupplyScenario, 240, "thoughts-initial4" )
+		
 		--Seed the RNG based off the player's movements & the starter package chosen:
-		seed_RNG( integerValueOfPackageChosen, player )
-	end
+		seed_RNG( packageChosen, player )
 
-	if toDestroyGUI then
+		--Destroy the Starter Packages GUI:
 		GUI.destroy()
 		local msGUI = player.gui.left[ "MilitarySupply:main" ]
 		msGUI.caption = { "military-supply-scenario-gui.title1" }
@@ -665,20 +615,20 @@ end
 
 --Determines which Starter Package the player currently is previewing in their GUI.
 --@param player	The LuaPlayer whose GUI to check.
---@return			One of "logistics", "production", "combat", or nil.
+--@return			Number.  Returns the index of the currently open starter package.
 --				Note that if the Starter Package GUI is open but the player isn't previewing any
---				Starter Package, then nil is returned.  nil is also returned if the GUI isn't open.
+--				Starter Package, then 0 is returned.  0 is also returned if the GUI isn't open.
 function get_which_starter_package_is_chosen( player )
 	local starterPackageGUI = player.gui.screen[ STARTER_PACKAGE_GUI_TOP_LEVEL_NAME ]
 	if starterPackageGUI then
-		if starterPackageGUI[ "logistics-preview" ].visible then
-			return "logistics"
-		elseif starterPackageGUI[ "production-preview" ].visible then
-			return "production"
-		elseif starterPackageGUI[ "combat-preview" ].visible then
-			return "combat"
+		local title = starterPackageGUI.titlebar[ "titlebar-title" ].caption
+		for index, v in ipairs( global.starterPackages ) do
+			--This line of code below is why we require "util" at the beginning of this file.
+			if table.compare( title, v.localisedName ) then
+				return index
+			end
 		end
 	end
 	--Else, the Starter Package GUI was not open at all, or the player was not previewing anything.
-	return nil
+	return 0
 end

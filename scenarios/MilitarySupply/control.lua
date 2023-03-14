@@ -263,6 +263,7 @@ script.on_init( function()
 	--Make the day 15 minutes long, which is longer than by default.
 	game.surfaces[ 1 ].ticks_per_day = 60 * 60 * 15
 
+	initialize_starter_packages()
 	
 	--Disable all recipes & disable research for all forces.
 	for _, force in pairs( game.forces ) do
@@ -402,9 +403,12 @@ script.on_nth_tick( 60, function( event )
 end )
 
 script.on_event( defines.events.on_gui_click, function( event )
-	--Create some local variables:\
+	--Create some local variables:
 	local player = game.players[ event.player_index ]
 	local name = event.element.name
+	--The length of the part of the button's name that's meant to mark it as unique from other UI elements.
+	--The rest of the button's name is meant to serve as an ID.
+	local lenForUniqueness = string.len( BUTTON_TO_SELECT_STARTER_PACKAGE )
 	if name == BUTTON_TO_TOGGLE_GOALS_GUI then
 		if get_is_goals_GUI_open( player ) then
 			hide_goals_GUI( player )
@@ -432,13 +436,10 @@ script.on_event( defines.events.on_gui_click, function( event )
 	elseif name == CLOSE_BUTTON_FOR_STARTER_PACKAGE_GUI then
 		destroy_starter_package_GUI( player )
 	elseif name == BUTTON_TO_DESELECT_STARTER_PACKAGE then
-		choose_starter_package( player, nil )
-	elseif name == BUTTON_TO_SELECT_LOGISTICS_STARTER_PACKAGE then
-		choose_starter_package( player, "logistics" )
-	elseif name == BUTTON_TO_SELECT_PRODUCTION_STARTER_PACKAGE then
-		choose_starter_package( player, "production" )
-	elseif name == BUTTON_TO_SELECT_COMBAT_STARTER_PACKAGE then
-		choose_starter_package( player, "combat" )
+		choose_starter_package( player, -1 )
+	--If it was a starter package selection, extract the number from it & return:
+	elseif string.sub( name, 1, lenForUniqueness ) == BUTTON_TO_SELECT_STARTER_PACKAGE then
+		choose_starter_package( player, tonumber( string.sub( name, lenForUniqueness + 1 )))
 	elseif name == BUTTON_TO_CONFIRM_STARTER_PACKAGE then
 		receive_starter_package( player, get_which_starter_package_is_chosen( player ))
 	--If it was an upgrade in the shop, check to see if it has the correct prefix:
