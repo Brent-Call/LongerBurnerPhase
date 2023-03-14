@@ -453,6 +453,10 @@ function create_starter_package_GUI( player )
 
 	--Loop through all starter packages & add a list entry for each:
 	for i, sp in ipairs( global.starterPackages ) do
+		if not game.is_valid_sprite_path( sp.sprite ) then
+			error( "The sprite path of starter package "..i.." is not valid!" )
+		end
+
 		local flow = list.add({ type = "flow", name = "package-"..i, direction = "horizontal", style = "centering_horizontal_flow" })
 		flow.add({ type = "sprite-button", name = BUTTON_TO_SELECT_STARTER_PACKAGE..i, sprite = sp.sprite, style = "Q-LongerBurnerPhase:slot_button_64px" })
 		flow.add({ type = "label", name = "name-of-"..i, caption = sp.localisedName })
@@ -524,10 +528,15 @@ function choose_starter_package( player, packageChosen )
 		local preview = GUI[ "preview" ]
 		preview.visible = true
 		preview.clear()
+			
+		local contents = thePackage.contents
+		if not contents or #contents < 1 then
+			error( "The requested starter package has no contents!" )
+		end
 
 		--We populate the GUI based on the data inside the table!
 		--Yay for data-based things!  Yay!  Data!  Supposed to be cleaner, better-organized code!
-		for _, v in ipairs( thePackage.contents ) do
+		for _, v in ipairs( contents ) do
 			--Each separate thing in the starter package corresponds with a row in the list:
 			local flow = preview.add({ type = "flow", direction = "horizontal", style = "centering_horizontal_flow" })
 
@@ -547,7 +556,7 @@ function choose_starter_package( player, packageChosen )
 				--Sprite buttons are the only GUI element that supports drawing a number on it.
 				flow.add({ type = "sprite-button", sprite = "item/"..v.item, number = v.count,
 					ignored_by_interaction = true, style = "slot_button" })
-				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-preview-item-qty",
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-item-qty",
 					game.item_prototypes[ v.item ].localised_name, v.count }})
 			elseif v.type == "crafting-speed-modifier" then
 				if type( v.modifier ) ~= "number" then
@@ -565,6 +574,21 @@ function choose_starter_package( player, packageChosen )
 				--Remember, the armor & the equipment inside it are all predefined.
 				flow.add({ type = "sprite", sprite = "item/radar", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-force-map-chart" }})
+			elseif v.type == "money-multiplier" then
+				if type( v.multiplier ) ~= "number" then
+					error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multiplier ).."." )
+				end
+				flow.add({ type = "sprite", sprite = "item/coin", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-money-multiplier", v.multiplier }})
+			elseif v.type == "score-multiplier" then
+				if type( v.multiplier ) ~= "number" then
+					error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multiplier ).."." )
+				end
+				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-score-multiplier", v.multiplier }})
+			elseif v.type == "richness-penalty" then
+				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-richness-penalty" }})
 			else
 				error( "Paramater \"type\" was not one of the predefined valid values." )
 			end

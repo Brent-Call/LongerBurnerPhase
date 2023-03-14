@@ -469,10 +469,13 @@ end
 --							plenty of useful equipment in their equipment grid.  This is all predefined.
 --			"force-map-chart" -- When the starter package is chosen, the player's force will chart an area of the map.
 --							The surface charted will be the surface the player is currently located on.
+--			"money-multiplier" -- Grants a global multiplier to goal reward.
+--			"score-multiplier" -- Grants a global multiplier to score.
 --	item -- String.  Name of the item prototype to use.  Used if type is "item".
 --	count -- Number.  Amount of items given.  Used if type is "item".
 --	modifier -- Number.  Amount of modifier to give.  Used if type is "crafting-speed-modifier".
 --	area -- BoundingBox.  Area of the world to be charted.  Used if type is "force-map-chart".
+--	multiplier -- Number.  Amount to multiply by.  Used if type is "money-multiplier" or "score-multiplier".
 function initialize_starter_packages()
 	global.starterPackages =
 	{
@@ -516,6 +519,20 @@ function initialize_starter_packages()
 				{ type = "item", item = "stone-wall", count = 100 },
 				{ type = "armor-with-equipment" },
 				{ type = "force-map-chart", area = {{ -400, -400 }, { 200, 200 }}}
+			}
+		},
+		--Richness challenge starter package:
+		{
+			localisedName = { "military-supply-scenario-gui.starter-package-richness-challenge" },
+			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-richness-challenge" },
+			sprite = "utility/questionmark",
+			contents =
+			{
+				{ type = "item", item = "advanced-burner-mining-drill", count = 2 },
+				{ type = "item", item = "steel-furnace", count = 10 },
+				{ type = "money-multiplier", multiplier = 0.5 },
+				{ type = "score-multiplier", multiplier = 3 },
+				{ type = "richness-penalty" }
 			}
 		}
 	}
@@ -576,6 +593,18 @@ function apply_bonuses_from_starter_package( player, index )
 			end
 		elseif v.type == "force-map-chart" then
 			player.force.chart( player.surface, v.area )
+		elseif v.type == "money-multiplier" then
+			if type( v.multiplier ) ~= "number" then
+				error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multplier ).."." )
+			end
+			global.militarySupplyScenario.moneyMultiplier = global.militarySupplyScenario.moneyMultiplier * v.multiplier
+		elseif v.type == "score-multiplier" then
+			if type( v.multiplier ) ~= "number" then
+				error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multplier ).."." )
+			end
+			global.militarySupplyScenario.scoreMultiplier = global.militarySupplyScenario.scoreMultiplier * v.multiplier
+		elseif v.type == "richness-penalty" then
+			apply_richness_penalty()
 		else
 			error( "Paramater \"type\" was not one of the predefined valid values." )
 		end
@@ -583,4 +612,28 @@ function apply_bonuses_from_starter_package( player, index )
 
 	--The character will have some thoughts or comments on the starter package chosen.
 	player.print( starterPackage.messageWhenChosen )
+end
+
+--Any amount of ore less than or equal to this number is not penalized.
+--Additionally, any amount of ore above this number won't drop below this number as part of applying the penalty.
+local MINIMUM_ORE_TO_PENALIZE = 10
+
+--This function decreases the richness of all resource entities on the map.
+--This function is meant to be called ONLY ONCE because it requires searching an entire surface, so it's slow.
+function apply_richness_penalty()
+	local allResources = game.surfaces[ 1 ].find_entities_filtered({ type = "resource" })
+	--Just for debug purposes, let's start with a small area.
+	for _, v in pairs( allResources ) do
+		if v.amount > MINIMUM_ORE_TO_PENALIZE then
+			if v.name == "copper-ore" then
+				--Reduce copper ore amounts by 95%
+				--But don't reduce below MINIMUM_ORE_TO_PENALIZE.
+				v.amount = math.max( MINIMUM_ORE_TO_PENALIZE, v.amount * 0.05 )
+			else
+				--Reduce all other ore amounts by 90%
+				--But don't reduce below MINIMUM_ORE_TO_PENALIZE.
+				v.amount = math.max( MINIMUM_ORE_TO_PENALIZE, v.amount * 0.1 )
+			end
+		end
+	end
 end
