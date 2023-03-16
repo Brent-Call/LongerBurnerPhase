@@ -471,11 +471,15 @@ end
 --							The surface charted will be the surface the player is currently located on.
 --			"money-multiplier" -- Grants a global multiplier to goal reward.
 --			"score-multiplier" -- Grants a global multiplier to score.
+--			"richness-penalty" -- Reduces the richness of all resources on the map.
 --	item -- String.  Name of the item prototype to use.  Used if type is "item".
 --	count -- Number.  Amount of items given.  Used if type is "item".
 --	modifier -- Number.  Amount of modifier to give.  Used if type is "crafting-speed-modifier".
 --	area -- BoundingBox.  Area of the world to be charted.  Used if type is "force-map-chart".
 --	multiplier -- Number.  Amount to multiply by.  Used if type is "money-multiplier" or "score-multiplier".
+--	multipliers -- Table.  Amount to multiply each resource amount by.  Used if type is "richness-penalty".
+--						The keys of this table are the prototype names of resources & the values are numbers.
+--						Additionally, there is one special mandatory key: "other", used as a default value.
 function initialize_starter_packages()
 	global.starterPackages =
 	{
@@ -532,7 +536,11 @@ function initialize_starter_packages()
 				{ type = "item", item = "steel-furnace", count = 10 },
 				{ type = "money-multiplier", multiplier = 0.5 },
 				{ type = "score-multiplier", multiplier = 3 },
-				{ type = "richness-penalty" }
+				{ type = "richness-penalty", multipliers =
+					{
+						[ "copper-ore" ] = 0.05,
+						other = 0.1
+				}}
 			}
 		}
 	}
@@ -595,16 +603,19 @@ function apply_bonuses_from_starter_package( player, index )
 			player.force.chart( player.surface, v.area )
 		elseif v.type == "money-multiplier" then
 			if type( v.multiplier ) ~= "number" then
-				error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multplier ).."." )
+				error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multiplier ).."." )
 			end
 			global.militarySupplyScenario.moneyMultiplier = global.militarySupplyScenario.moneyMultiplier * v.multiplier
 		elseif v.type == "score-multiplier" then
 			if type( v.multiplier ) ~= "number" then
-				error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multplier ).."." )
+				error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multiplier ).."." )
 			end
 			global.militarySupplyScenario.scoreMultiplier = global.militarySupplyScenario.scoreMultiplier * v.multiplier
 		elseif v.type == "richness-penalty" then
-			apply_richness_penalty()
+			if type( v.multipliers ) ~= "table" then
+				error( "Paramater \"multipliers\" was invalid.  Table expected, got "..type( v.multipliers ).."." )
+			end
+			apply_richness_penalty( v.multipliers )
 		else
 			error( "Paramater \"type\" was not one of the predefined valid values." )
 		end
@@ -617,23 +628,30 @@ end
 --Any amount of ore less than or equal to this number is not penalized.
 --Additionally, any amount of ore above this number won't drop below this number as part of applying the penalty.
 local MINIMUM_ORE_TO_PENALIZE = 10
+--Any amount of ore greater than this number is capped at this amount instead.
+local MAXIMUM_ORE_AFTER_PENALTY = 4294967295 --2^32 - 1
 
 --This function decreases the richness of all resource entities on the map.
 --This function is meant to be called ONLY ONCE because it requires searching an entire surface, so it's slow.
-function apply_richness_penalty()
+--@param multipliers	Table.  The keys are the names of resources to penalize & the values are the amount to multiply by.
+--					For any key not present in the table, the key "other" is used as a default value.
+--					The key "other" is ABSOLUTELY REQUIRED.
+function apply_richness_penalty( multipliers )
 	local allResources = game.surfaces[ 1 ].find_entities_filtered({ type = "resource" })
+	if type( multipliers.other ) ~= "number" then
+		error( "Paramater \"multipliers.other\" was invalid.  Number expected, got "..type( multipliers.other ).."." )
+	end
+
 	--Just for debug purposes, let's start with a small area.
 	for _, v in pairs( allResources ) do
 		if v.amount > MINIMUM_ORE_TO_PENALIZE then
-			if v.name == "copper-ore" then
-				--Reduce copper ore amounts by 95%
-				--But don't reduce below MINIMUM_ORE_TO_PENALIZE.
-				v.amount = math.max( MINIMUM_ORE_TO_PENALIZE, v.amount * 0.05 )
-			else
-				--Reduce all other ore amounts by 90%
-				--But don't reduce below MINIMUM_ORE_TO_PENALIZE.
-				v.amount = math.max( MINIMUM_ORE_TO_PENALIZE, v.amount * 0.1 )
-			end
+			--Use the name of the resource, but if that key is missing, use the default.
+			--Don't go negative & don't increase 
+			local thisMulti = multipliers[ v.name ] or multipliers.other
+
+			--Don't reduce below MINIMUM_ORE_TO_PENALIZE or go above MAXIMUM_ORE_AFTER_PENALTY:
+			v.amount = math.max( MINIMUM_ORE_TO_PENALIZE, math.min( v.amount * thisMulti, MAXIMUM_ORE_AFTER_PENALTY ))
 		end
+		--Don't affect amounts of ore that are already less than MINIMUM_ORE_TO_PENALIZE.
 	end
 end
