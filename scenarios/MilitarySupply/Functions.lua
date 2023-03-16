@@ -458,6 +458,7 @@ end
 --A starter package data structure has the following fields:
 --	localisedName -- LocalisedString.  Displayed as the name of the starter package.
 --	messageWhenChosen -- LocalisedString.  Printed to the console when the starter package is chosen.
+--	isChallenge -- Boolean.  If true, the GUI warns the player that this starter package is more difficult than normal.
 --	sprite -- SpritePath.  Image associated with this starter package.
 --	contents -- Table.  Array of the starter package item data structures.
 --A starter package item data structure has the following fields:
@@ -487,6 +488,7 @@ function initialize_starter_packages()
 		{
 			localisedName = { "military-supply-scenario-gui.starter-package-logistics" },
 			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-logistics" },
+			isChallenge = false,
 			sprite = "item-group/logistics",
 			contents =
 			{
@@ -501,6 +503,7 @@ function initialize_starter_packages()
 		{
 			localisedName = { "military-supply-scenario-gui.starter-package-production" },
 			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-production" },
+			isChallenge = false,
 			sprite = "item-group/production",
 			contents =
 			{
@@ -515,6 +518,7 @@ function initialize_starter_packages()
 		{
 			localisedName = { "military-supply-scenario-gui.starter-package-combat" },
 			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-combat" },
+			isChallenge = false,
 			sprite = "item-group/combat",
 			contents =
 			{
@@ -529,18 +533,22 @@ function initialize_starter_packages()
 		{
 			localisedName = { "military-supply-scenario-gui.starter-package-richness-challenge" },
 			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-richness-challenge" },
+			isChallenge = true,
 			sprite = "utility/questionmark",
 			contents =
 			{
 				{ type = "item", item = "advanced-burner-mining-drill", count = 2 },
 				{ type = "item", item = "steel-furnace", count = 10 },
 				{ type = "money-multiplier", multiplier = 0.5 },
-				{ type = "score-multiplier", multiplier = 3 },
+				{ type = "score-multiplier", multiplier = 4 },
 				{ type = "richness-penalty", multipliers =
 					{
-						[ "copper-ore" ] = 0.05,
-						other = 0.1
-				}}
+						coal = 0.05,
+						[ "copper-ore" ] = 0.025,
+						[ "iron-ore" ] = 0.07,
+						other = 0.06
+					}
+				}
 			}
 		}
 	}

@@ -528,7 +528,18 @@ function choose_starter_package( player, packageChosen )
 		local preview = GUI[ "preview" ]
 		preview.visible = true
 		preview.clear()
-			
+		
+		if type( thePackage.isChallenge ) ~= "boolean" then
+			error( "Paramater \"isChallenge\" was invalid.  Boolean expected, got "..type( thePackage.isChallenge ).."." )
+		end
+
+		if thePackage.isChallenge then
+			local warningText = preview.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-is-challenge" }, style = "caption_label" })
+			warningText.style.single_line = false
+			warningText.style.maximal_width = 250
+			preview.add({ type = "line", direction = "horizontal" })
+		end
+
 		local contents = thePackage.contents
 		if not contents or #contents < 1 then
 			error( "The requested starter package has no contents!" )
