@@ -67,7 +67,7 @@ data:extend({
 	circuit_wire_max_distance = 0
 },
 {
-	type = "container",
+	type = "infinity-container",
 	name = "military-supply-dropoff-chest",
 	icon = "__LongerBurnerPhase__/Graphics/Entities/MilitarySupply/dropoff-chest-icon.png",
 	icon_size = 32,
@@ -124,6 +124,10 @@ data:extend({
 	
 	map_color = MILITARY_SUPPLY_CHEST_MAP_COLOR,
 	
+	--Properties of infinity chests:
+	erase_contents_when_mined = true,
+	gui_mode = "none",
+
 	--Circuit connector definitions; this chest cannot be connected to the circuit network.
 	circuit_wire_connection_point = circuit_connector_definitions[ "chest" ].points,
 	circuit_connector_sprites = circuit_connector_definitions[ "chest" ].sprites,

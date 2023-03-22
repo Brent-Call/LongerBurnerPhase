@@ -258,13 +258,21 @@ script.on_init( function()
 		error( "Required script position \"Dropoff\" does not exist!" )
 	end
 
-	--Creates a military supply pickup chest at position (0,0) for the player's force.  Makes it indestructible.
-	local supplyChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-pickup-chest", position = supplyChestPos.position, force = "player" }
+	--Creates a military supply pickup chest at a predermined position.  Makes it indestructible.
+	local supplyChest = game.surfaces[ 1 ].create_entity({
+		name = "military-supply-pickup-chest",
+		position = supplyChestPos.position,
+		force = "player"
+	})
 	supplyChest.destructible = false
 	
-	--Creates a military supply dropoff chest at position (2,0) for the player's force.  Makes it indestructible.
-	local dropoffChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-dropoff-chest", position = dropoffChestPos.position, force = "player" }
-	dropoffChest.destructible = false
+	--Creates a military supply dropoff chest at a predetermined position.  Makes it indestructible.
+	global.dropoffChest = game.surfaces[ 1 ].create_entity({
+		name = "military-supply-dropoff-chest",
+		position = dropoffChestPos.position,
+		force = "player"
+	})
+	global.dropoffChest.destructible = false
 	
 	--Make the day 15 minutes long, which is longer than by default.
 	game.surfaces[ 1 ].ticks_per_day = 60 * 60 * 15
@@ -366,27 +374,6 @@ script.on_nth_tick( 60, function( event )
 	local mS = global.militarySupplyScenario
 	if mS.secondsLeft > 0 then
 		mS.secondsLeft = mS.secondsLeft - 1
-	end
-	
-	--Fill the dropoff chest invenory:
-	--We want 50 sulfur & 50 zarnium crystals in it exactly, but only add them when the player has unlocked them.
-	--We use game.forces[ 1 ] as a proxy for any given force or player having unlocked them.
-	local chestInventory = game.surfaces[ 1 ].find_entity( "military-supply-dropoff-chest", { x = 2.5, y = 0.5 }).get_inventory( defines.inventory.chest )
-	if mS.sulfurUnlocked then
-		local sulfurCount = chestInventory.get_item_count( "sulfur" )
-		if sulfurCount > 50 then
-			chestInventory.remove{ name = "sulfur", count = sulfurCount - 50 }
-		elseif sulfurCount < 50 then
-			chestInventory.insert{ name = "sulfur", count = 50 - sulfurCount }
-		end
-	end
-	if mS.zarniumUnlocked then
-		local zarniumCount = chestInventory.get_item_count( "military-supply-zarnium-crystal" )
-		if zarniumCount > 50 then
-			chestInventory.remove{ name = "military-supply-zarnium-crystal", count = zarniumCount - 50 }
-		elseif zarniumCount < 50 then
-			chestInventory.insert{ name = "military-supply-zarnium-crystal", count = 50 - zarniumCount }
-		end
 	end
 	
 	--Area to scan to see if any player is close enough to a script trigger:

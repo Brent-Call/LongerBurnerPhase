@@ -96,6 +96,10 @@ function unlock_eternity_ray()
 	end
 	--Tell the scenario object to add zarnium crystals to the SUPPLY DROPOFF CHEST:
 	global.militarySupplyScenario.zarniumUnlocked = true
+	if not global.dropoffChest or not global.dropoffChest.valid then
+		error( "The dropoff chest became invalid somehow." )
+	end
+	global.dropoffChest.set_infinity_container_filter( 2, { name = "military-supply-zarnium-crystal", count = 50, mode = "exactly" })
 end
 
 function on_killed_spawner()
@@ -260,6 +264,10 @@ upgradeAssociatedFunctions =
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-sulfur1" )
 		--Tell the scenario object to add sulfur to the SUPPLY DROPOFF CHEST:
 		global.militarySupplyScenario.sulfurUnlocked = true
+		if not global.dropoffChest or not global.dropoffChest.valid then
+			error( "The dropoff chest became invalid somehow." )
+		end
+		global.dropoffChest.set_infinity_container_filter( 1, { name = "sulfur", count = 50, mode = "exactly" })
 	end,
 	repair = function()
 		enable_recipes_for_all({ "military-supply-repair-pack" })
