@@ -249,12 +249,21 @@ script.on_init( function()
 	add_message_to_scenario_object( mS, "thoughts-unlock-turret" )
 	add_message_to_scenario_object( mS, "thoughts-unlock-wall" )
 	
+	local supplyChestPos = game.surfaces[ 1 ].get_script_position( "Pickup" )
+	if not supplyChestPos then
+		error( "Required script position \"Pickup\" does not exist!" )
+	end
+	local dropoffChestPos = game.surfaces[ 1 ].get_script_position( "Dropoff" )
+	if not dropoffChestPos then
+		error( "Required script position \"Dropoff\" does not exist!" )
+	end
+
 	--Creates a military supply pickup chest at position (0,0) for the player's force.  Makes it indestructible.
-	local supplyChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-pickup-chest", position = { 0, 0 }, force = "player" }
+	local supplyChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-pickup-chest", position = supplyChestPos.position, force = "player" }
 	supplyChest.destructible = false
 	
 	--Creates a military supply dropoff chest at position (2,0) for the player's force.  Makes it indestructible.
-	local dropoffChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-dropoff-chest", position = { 2, 0 }, force = "player" }
+	local dropoffChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-dropoff-chest", position = dropoffChestPos.position, force = "player" }
 	dropoffChest.destructible = false
 	
 	--Make the day 15 minutes long, which is longer than by default.
@@ -282,9 +291,13 @@ script.on_init( function()
 	--Easter Eggs time!
 	local doEff = game.active_mods[ "Efficiency_Module_Rebalance" ] ~= nil
 	local doIns = game.item_prototypes[ "Q-InserterModule:inserter-module-3" ] ~= nil
+	local easter1Pos = game.surfaces[ 1 ].get_script_position( "Easter1" )
+	if not easter1Pos then
+		error( "Required script position \"Easter1\" does not exist!" )
+	end
 	if doEff or doIns then
 		local chest = game.surfaces[ 1 ].create_entity({
-			name = "steel-chest", position = { x = -404, y = 152 }, force = "player" })
+			name = "steel-chest", position = easter1Pos.position, force = "player" })
 		if doIns then
 			chest.insert({ name = "Q-InserterModule:inserter-module-3", count = 2 })
 		end
@@ -377,13 +390,15 @@ script.on_nth_tick( 60, function( event )
 	end
 	
 	--Area to scan to see if any player is close enough to a script trigger:
-	local triggerBox = game.surfaces[ 1 ].get_script_areas( "Shipwreck" )[ 1 ].area
+	local shipwreckArea = game.surfaces[ 1 ].get_script_area( "Shipwreck" )
+	if not shipwreckArea then
+		error( "Required script area \"Shipwreck\" does not exist!" )
+	end
+	local triggerBox = shipwreckArea.area
 		
 	for _, player in pairs( game.players ) do
 		--While we're looping through all players, we might as well:
 		update_scenario_timer( player )
-
-		--local scanArea = {{ player.position.x - 48, player.position.y - 48 }, { player.position.x + 48, player.position.y + 48 }}
 	
 		--Also check to see if a trigger for a scenario message has been met:
 		if not get_was_message_shown_of_scenario_object( mS, "thoughts-find-shipwreck" ) then
