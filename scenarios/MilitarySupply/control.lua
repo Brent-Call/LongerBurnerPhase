@@ -249,9 +249,6 @@ script.on_init( function()
 	add_message_to_scenario_object( mS, "thoughts-unlock-turret" )
 	add_message_to_scenario_object( mS, "thoughts-unlock-wall" )
 	
-	--Erase the map:
-	game.forces.player.clear_chart()
-	
 	--Creates a military supply pickup chest at position (0,0) for the player's force.  Makes it indestructible.
 	local supplyChest = game.surfaces[ 1 ].create_entity{ name = "military-supply-pickup-chest", position = { 0, 0 }, force = "player" }
 	supplyChest.destructible = false
@@ -265,11 +262,22 @@ script.on_init( function()
 
 	initialize_starter_packages()
 	
-	--Disable all recipes & disable research for all forces.
+	--Reset a bunch of data for each force.
 	for _, force in pairs( game.forces ) do
+		--Disable all recipes & technologies.
 		force.disable_all_prototypes()
+		--Disable the ability to research itself.
 		force.disable_research()
+		--Erase all maps.
+		force.clear_chart()
+		--Erase all flow statistics.
+		force.item_production_statistics.clear()
+		force.fluid_production_statistics.clear()
+		force.kill_count_statistics.clear()
+		force.entity_build_count_statistics.clear()
 	end
+	--Erase all flow statistics.
+	game.pollution_statistics.clear()
 
 	--Easter Eggs time!
 	local doEff = game.active_mods[ "Efficiency_Module_Rebalance" ] ~= nil
