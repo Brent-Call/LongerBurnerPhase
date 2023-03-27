@@ -32,6 +32,7 @@ QLuaLibrary.add_tech_prerequisite( "steel-processing", "burner-automation" )
 QLuaLibrary.add_tech_prerequisite( "automation", "electricity" )
 QLuaLibrary.add_tech_prerequisite( "optics", "electricity" )
 QLuaLibrary.add_tech_prerequisite( "research-speed-2", "electronics" )
+QLuaLibrary.add_tech_prerequisite( "research-speed-2", "logistic-science-pack" )
 QLuaLibrary.add_tech_prerequisite( "logistic-science-pack", "automation" )
 QLuaLibrary.add_tech_prerequisite( "advanced-electronics", "electronics" ) --In vanilla, Electronics is multiple steps higher up the tree.
 QLuaLibrary.add_tech_prerequisite( "automation-3", "automation-2" ) --In vanilla, Automation 2 is higher up in the prerequisite chain, but things are shifted around due to LBP
@@ -73,3 +74,45 @@ end
 
 --Automatically add tech prerequisites to anything requiring Automation Science Packs, since this is a new technology added by my mod:
 QLuaLibrary.globally_add_science_pack_tech_prerequisite( "automation-science-pack", "automation-science-pack" )
+
+--This function sets the infer_icon property to false for effects that affect laboratories.
+--@param effectsTable   A table where the values are ModifierPrototypes OR nil.
+--                      If nil, this function does nothing.
+--@return nil
+local function process_effects_table( effectsTable )
+    if effectsTable == nil then
+        return
+    end
+    for _, effect in pairs( effectsTable ) do
+        if effect.type == "laboratory-speed" or effect.type == "laboratory-productivity" then
+            effect.infer_icon = false
+        end
+    end
+end
+
+--Iterate through all researches that affect lab research speed & make them not infer icon.
+--We make no assumptions about whether or not the technology has normal or expensive mode.
+for _, v in pairs( data.raw.technology ) do
+    process_effects_table( v.effects )
+    if v.normal then
+        process_effects_table( v.normal.effects )
+    end
+    if v.expensive then
+        process_effects_table( v.expensive.effects )
+    end
+end
+
+--Change the default utility sprites for technology effects.
+--We do this because we don't want the technologies to auto-infer using the first lab they see,
+--because that is the burner lab, & I'd rather use the regular lab as the icon for that.
+local LAB_PROTOTPYE = data.raw.lab[ "lab" ]
+local icon = data.raw[ "utility-sprites" ].default.laboratory_speed_modifier_icon
+icon.filename = LAB_PROTOTPYE.icon
+icon.width = LAB_PROTOTPYE.icon_size
+icon.height = LAB_PROTOTPYE.icon_size
+icon.mipmap_count = LAB_PROTOTPYE.icon_mipmaps
+icon = data.raw[ "utility-sprites" ].default.laboratory_productivity_modifier_icon
+icon.filename = LAB_PROTOTPYE.icon
+icon.width = LAB_PROTOTPYE.icon_size
+icon.height = LAB_PROTOTPYE.icon_size
+icon.mipmap_count = LAB_PROTOTPYE.icon_mipmaps
