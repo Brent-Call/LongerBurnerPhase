@@ -110,18 +110,18 @@ function on_killed_spawner()
 end
 
 function upgrades_after_concrete()
-	--Turn refined concrete off because there aren't any machines that can craft it in this scenario.
-	--add_upgrade_to_scenario_object( global.militarySupplyScenario, "refined-concrete", "item/refined-concrete", 600 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "refined-concrete", "item/refined-concrete", 600 )
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "sulfur", "item/sulfur", 700 )
 end
 
 function upgrades_after_wall()	
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "repair", "item/repair-pack", 75 )
 	add_upgrade_to_scenario_object( global.militarySupplyScenario, "heavy-armor", "item/heavy-armor", 550 )
+	add_upgrade_to_scenario_object( global.militarySupplyScenario, "concrete", "item/concrete", 275 )
 end
 
 function upgrades_after_repair()	
-	add_upgrade_to_scenario_object( global.militarySupplyScenario, "concrete", "item/concrete", 275 )
+	--The one upgrade that had repair packs as a prerequisite, "concrete", was moved elsewhere.
 end
 
 function upgrades_after_bam2()
@@ -284,7 +284,7 @@ upgradeAssociatedFunctions =
 		upgrades_after_concrete()
 	end,
 	[ "refined-concrete" ] = function()
-		enable_recipes_for_all({ "refined-concrete", "refined-hazard-concrete" })
+		enable_recipes_for_all({ "military-supply-refined-concrete", "refined-hazard-concrete" })
 		display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-unlock-refined-concrete" )
 	end,
 	[ "steel-furnace" ] = function()

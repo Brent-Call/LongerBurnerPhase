@@ -1,4 +1,4 @@
---The following recipeies are used only in the Military Supply scenario:
+--The following recipeies are used only in the Military Supply scenario.
 data:extend({
 {
 	--This is a version of the normal recipe for repair packs,
@@ -14,6 +14,26 @@ data:extend({
 		{ "iron-gear-wheel", 3 }
 	},
 	result = "repair-pack"
+},
+{
+	--This is a version of the normal recipe for refined concrete,
+	--but it can be crafted in a Burner Assembling Machine 2.
+	--Since this recipe is only for the Military Supply scenario,
+	--I think I'll make it a bit cheaper to craft than normal.
+	type = "recipe",
+	name = "military-supply-refined-concrete",
+	category = "crafting-with-fluid",
+	enabled = false,
+	energy_required = 15,
+	ingredients =
+	{
+		{ "concrete", 10 }, --Regular recipe requires 20
+		{ "iron-stick", 8 },
+		--Regular recipe requires 1 steel plate.
+		{ type = "fluid", name = "water", amount = 100 }
+	},
+	result = "refined-concrete",
+	result_count = 10
 },
 {
 	type = "recipe",
