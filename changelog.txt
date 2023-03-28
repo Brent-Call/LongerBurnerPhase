@@ -7,6 +7,8 @@ Date: 14. 03. 2023
     - Lab research speed technologies now use the vanilla lab's icon instead of the burner lab icon.
     - Lab research speed 2 technology now has Logistic science pack technology as a prerequisite.
     - Military Supply: Changed how starter packages are implemented.  I don't expect anyone to care about this.
+    - Military Supply: Changed how the supply dropoff chest is implemented.  Again, you probably won't care.
+    - Military Supply: Made the map generally much prettier.
     - Military Supply: Added an upgrade for refined concrete.
     - Military Supply: Changed the prerequisites of the normal concrete upgrade.
 ---------------------------------------------------------------------------------------------------
