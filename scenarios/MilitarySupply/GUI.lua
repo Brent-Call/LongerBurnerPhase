@@ -577,10 +577,14 @@ function choose_starter_package( player, packageChosen )
 				--We use the character sprite & calculate the percentage bonus.
 				flow.add({ type = "sprite", sprite = "entity/character", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-crafting-bonus", 100 * v.modifier }})
-			elseif v.type == "armor-with-equipment" then
+			elseif v.type == "armor-with-shield" then
 				--Remember, the armor & the equipment inside it are all predefined.
 				flow.add({ type = "sprite", sprite = "item/modular-armor", style = "tool_equip_equipment_image" })
-				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-armor" }})
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-armor-with-shield" }})
+			elseif v.type == "armor-with-roboport" then
+				--Remember, the armor & the equipment inside it are all predefined.
+				flow.add({ type = "sprite", sprite = "item/modular-armor", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-armor-with-roboport" }})
 			elseif v.type == "force-map-chart" then
 				--Remember, the armor & the equipment inside it are all predefined.
 				flow.add({ type = "sprite", sprite = "item/radar", style = "tool_equip_equipment_image" })
@@ -600,8 +604,29 @@ function choose_starter_package( player, packageChosen )
 			elseif v.type == "richness-penalty" then
 				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-richness-penalty" }})
+			elseif v.type == "worker-robots-speed-modifier" then
+				if type( v.modifier ) ~= "number" then
+					error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
+				end
+				--Else: valid.
+				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-worker-robots-speed-modifier", 100 * v.modifier }})
+			elseif v.type == "manual-mining-speed-penalty" then
+				if type( v.modifier ) ~= "number" then
+					error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
+				end
+				--Else: valid.
+				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-manual-mining-speed-penalty", 100 * v.modifier }})
+			elseif v.type == "ghost-rebuild-timeout" then
+				if type( v.hoursToTimeout ) ~= "number" then
+					error( "Paramater \"hoursToTimeout\" was invalid.  Number expected, got "..type( v.hoursToTimeout ).."." )
+				end
+				--Else: valid.
+				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-ghost-rebuild-timeout", v.hoursToTimeout }})
 			else
-				error( "Paramater \"type\" was not one of the predefined valid values." )
+				error( "Parameter \"type\" was not one of the predefined valid values." )
 			end
 		end
 	else

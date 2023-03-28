@@ -1,5 +1,7 @@
 --The code in each of these functions acts on each specific force & player, so it should be multiplayer-safe.
 
+local TICKS_PER_HOUR = 216000 --Number of game ticks per hour of real time.
+
 --This function accepts a table with a list of recipes, & it enables those recipes for ALL forces.
 --This is designed to be safe to use with other mods, so if a recipe doesn't exist,
 --this function skips that recipe instead of causing an error.
@@ -474,21 +476,30 @@ end
 --			"item" -- When the starter package is chosen, the item will go into the character's inventory.
 --			"crafting-speed-modifier" -- The player who chose this will get a bonus to manual crafting speed.
 --							The bonus wears off when they die.
---			"armor-with-equipment" -- When the starter package is chosen, the player will get armor with
+--			"armor-with-shield" -- When the starter package is chosen, the player will get armor with
 --							plenty of useful equipment in their equipment grid.  This is all predefined.
+--			"armor-with-roboport" -- Same as above, except the equipment loadout is different.
 --			"force-map-chart" -- When the starter package is chosen, the player's force will chart an area of the map.
 --							The surface charted will be the surface the player is currently located on.
 --			"money-multiplier" -- Grants a global multiplier to goal reward.
 --			"score-multiplier" -- Grants a global multiplier to score.
 --			"richness-penalty" -- Reduces the richness of all resources on the map.
+--			"worker-robots-speed-modifier" -- When the starter package is chosen, the player's force gets
+--							a modifier to the movement speed of their construction & logistic robots.
+--			"manual-mining-speed-penalty" -- The player who chose this will get a penalty to manual mining speed.
+--							The bonus wears off when they die.
+--			"ghost-rebuild-timeout" -- When the starter package is chosen, the pleyer's force gets a bonus
+--							where their entities that die create ghosts that last for a while.
 --	item -- String.  Name of the item prototype to use.  Used if type is "item".
 --	count -- Number.  Amount of items given.  Used if type is "item".
---	modifier -- Number.  Amount of modifier to give.  Used if type is "crafting-speed-modifier".
+--	modifier -- Number.  Amount of modifier to give.  Used if type is "crafting-speed-modifier", "worker-robots-speed-modifier",
+--			or "manual-mining-speed-penalty".
 --	area -- BoundingBox.  Area of the world to be charted.  Used if type is "force-map-chart".
 --	multiplier -- Number.  Amount to multiply by.  Used if type is "money-multiplier" or "score-multiplier".
 --	multipliers -- Table.  Amount to multiply each resource amount by.  Used if type is "richness-penalty".
 --						The keys of this table are the prototype names of resources & the values are numbers.
 --						Additionally, there is one special mandatory key: "other", used as a default value.
+--	hoursToTimeout -- Number.  Number of hours that entity ghosts remain after death.  Used if type is "ghost-rebuild-timeout".
 function initialize_starter_packages()
 	global.starterPackages =
 	{
@@ -533,8 +544,23 @@ function initialize_starter_packages()
 				{ type = "item", item = "uranium-rounds-magazine", count = 200 },
 				{ type = "item", item = "grenade", count = 20 },
 				{ type = "item", item = "stone-wall", count = 100 },
-				{ type = "armor-with-equipment" },
+				{ type = "armor-with-shield" },
 				{ type = "force-map-chart", area = {{ -400, -400 }, { 200, 200 }}}
+			}
+		},
+		--Builder's starter package:
+		{
+			localisedName = { "military-supply-scenario-gui.starter-package-builder" },
+			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-builder" },
+			isChallenge = false,
+			sprite = "item/personal-roboport-mk2-equipment",
+			contents =
+			{
+				{ type = "armor-with-roboport" },
+				{ type = "item", item = "construction-robot", count = 25 },
+				{ type = "worker-robots-speed-modifier", modifier = 1.8 },
+				{ type = "manual-mining-speed-penalty", modifier = -0.5 },
+				{ type = "ghost-rebuild-timeout", hoursToTimeout = 6 }
 			}
 		},
 		--Richness challenge starter package:
@@ -602,7 +628,7 @@ function apply_bonuses_from_starter_package( player, index )
 			end
 			--Else: valid.
 			player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + v.modifier
-		elseif v.type == "armor-with-equipment" then
+		elseif v.type == "armor-with-shield" then
 			player.insert({ name = "modular-armor", count = 1 })
 			--Put the equipment inside the modular armor's equipment grid:
 			local grid = player.get_inventory( defines.inventory.character_armor )[ 1 ].grid
@@ -613,6 +639,17 @@ function apply_bonuses_from_starter_package( player, index )
 			grid.put({ name = "battery-mk2-equipment", by_player = player })
 			grid.put({ name = "battery-mk2-equipment", by_player = player })
 			for n = 1, 11 do
+				grid.put({ name = "solar-panel-equipment", by_player = player })
+			end
+		elseif v.type == "armor-with-roboport" then
+			player.insert({ name = "modular-armor", count = 1 })
+			--Put the equipment inside the modular armor's equipment grid:
+			local grid = player.get_inventory( defines.inventory.character_armor )[ 1 ].grid
+			grid.put({ name = "personal-roboport-mk2-equipment", by_player = player })
+			grid.put({ name = "battery-mk2-equipment", by_player = player })
+			grid.put({ name = "battery-mk2-equipment", by_player = player })
+			grid.put({ name = "belt-immunity-equipment", by_player = player })
+			for n = 1, 16 do
 				grid.put({ name = "solar-panel-equipment", by_player = player })
 			end
 		elseif v.type == "force-map-chart" then
@@ -632,6 +669,21 @@ function apply_bonuses_from_starter_package( player, index )
 				error( "Paramater \"multipliers\" was invalid.  Table expected, got "..type( v.multipliers ).."." )
 			end
 			apply_richness_penalty( v.multipliers )
+		elseif v.type == "worker-robots-speed-modifier" then
+			if type( v.modifier ) ~= "number" then
+				error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
+			end
+			player.force.worker_robots_speed_modifier = player.force.worker_robots_speed_modifier + v.modifier
+		elseif v.type == "manual-mining-speed-penalty" then
+			if type( v.modifier ) ~= "number" then
+				error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
+			end
+			player.character_mining_speed_modifier = player.character_mining_speed_modifier + v.modifier
+		elseif v.type == "ghost-rebuild-timeout" then
+			if type( v.hoursToTimeout ) ~= "number" then
+				error( "Paramater \"hoursToTimeout\" was invalid.  Number expected, got "..type( v.hoursToTimeout ).."." )
+			end
+			player.force.ghost_time_to_live = player.force.ghost_time_to_live + v.hoursToTimeout * TICKS_PER_HOUR
 		else
 			error( "Paramater \"type\" was not one of the predefined valid values." )
 		end
