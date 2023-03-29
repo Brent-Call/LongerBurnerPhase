@@ -3,6 +3,7 @@ Version: 1.3.1
 Date: 14. 03. 2023
   Minor Features:
     - Military Supply: Added 2 new starter packages, one of which creates an optional additional challenge.
+    - Military Supply: Added compatibility with the mod Torches by Klonan.
   Changes:
     - Lab research speed technologies now use the vanilla lab's icon instead of the burner lab icon.
     - Lab research speed 2 technology now has Logistic science pack technology as a prerequisite.

@@ -45,16 +45,21 @@ function disable_recipes_for_all( arrayOfRecipes )
 end
 
 function initial_resources()
+	local addTorches = game.active_mods[ "Torches" ] ~= nil
 	for _, player in pairs( game.players ) do
 		player.insert({ name = "iron-plate", count = 300 })
 		player.insert({ name = "copper-plate", count = 100 })
 		player.insert({ name = "stone-furnace", count = 10 })
 		player.insert({ name = "burner-mining-drill", count = 10 })
 		player.insert({ name = "solid-fuel", count = 50 })
+		if addTorches then
+			player.insert({ name = "torch", count = 20 })
+		end
 	end
 end
 	
 function initial_recipes()
+	local addTorches = game.active_mods[ "Torches" ] ~= nil
 	add_goal_item( "pistol", 3.75, 5, 20 )
 	add_goal_item( "firearm-magazine", 2, 40, 400 )
 	enable_recipes_for_all({ 
@@ -66,6 +71,11 @@ function initial_recipes()
 		"iron-plate", "copper-plate", "steel-plate", "iron-stick", "iron-gear-wheel", "stone-brick",
 		--Combat recipes:
 		"pistol", "firearm-magazine" })
+	if addTorches then
+		--This is for 2 reasons: firstly, so that torches can be remade once mined,
+		--& secondly, so that torches appear in the list of unlocked items.
+		enable_recipes_for_all({ "torch" })
+	end
 	for _, player in pairs( game.players ) do
 		update_main_GUI_for_scenario( player )
 	end	
