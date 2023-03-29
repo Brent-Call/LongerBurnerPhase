@@ -516,7 +516,7 @@ script.on_event( defines.events.on_player_respawned, function( event )
 	display_message_of_scenario_object( global.militarySupplyScenario, "thoughts-player-died" )
 end )
 
-script.on_event( defines.events.on_built_entity, function( event )
+script.on_event( { defines.events.on_built_entity, defines.events.on_robot_built_entity }, function( event )
 	local entity = event.created_entity
 
 	if entity.name == "gun-turret" then
