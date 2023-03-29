@@ -359,9 +359,10 @@ script.on_nth_tick( 300, function( event )
 	if supplyChest.get_inventory( defines.inventory.chest ).get_item_count( "military-supply-eternity-ray" ) > 0 then
 		--Well, look at that!  You won!
 		for _, v in pairs( game.players ) do
-			v.set_ending_screen_data{ "military-supply-scenario-score.final-score", string.format( "%.3f", global.scoreManager.finalScore )}
+			v.set_ending_screen_data({ "military-supply-scenario-score.final-score",
+				string.format( "%.3f", global.scoreManager.finalScore )})
 		end
-		game.set_game_state{ game_finished = true, player_won = true, can_continue = false }
+		game.set_game_state({ game_finished = true, player_won = true, can_continue = false })
 	end
 	for _, player in pairs( game.players ) do
 		update_goals_GUI( player )
@@ -408,7 +409,7 @@ script.on_nth_tick( 60, function( event )
 	
 	if mS.secondsLeft <= 0 then
 		--If you run out of time, you lose.
-		game.set_game_state{ game_finished = true, player_won = false, can_continue = false }
+		game.set_game_state({ game_finished = true, player_won = false, can_continue = false })
 	end
 end )
 
@@ -501,7 +502,7 @@ script.on_event( defines.events.on_player_died, function( event )
 	
 	if mS.secondsLeft <= 0 then
 		--If you run out of time, you lose.
-		game.set_game_state{ game_finished = true, player_won = false, can_continue = false }
+		game.set_game_state({ game_finished = true, player_won = false, can_continue = false })
 	end
 	
 	--Since the time limit changed, reflect that instantly for all players:
