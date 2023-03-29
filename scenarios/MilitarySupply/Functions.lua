@@ -474,6 +474,8 @@ end
 --A starter package item data structure has the following fields:
 --	type -- String.  Determines the behavior of this entry.  The types are:
 --			"item" -- When the starter package is chosen, the item will go into the character's inventory.
+--					If the item in question is the hardcoded value "construction-robot" then the last slot
+--					in the character's inventory will have its filter set to be that item.
 --			"crafting-speed-modifier" -- The player who chose this will get a bonus to manual crafting speed.
 --							The bonus wears off when they die.
 --			"armor-with-shield" -- When the starter package is chosen, the player will get armor with
@@ -622,6 +624,11 @@ function apply_bonuses_from_starter_package( player, index )
 			end
 			--Else: valid.
 			player.insert({ name = v.item, count = v.count })
+			if v.item == "construction-robot" then
+				--Filter the last slot in the player's inventory:
+				local inventory = player.get_inventory( defines.inventory.character_main )
+				inventory.set_filter( #inventory, "construction-robot" )
+			end
 		elseif v.type == "crafting-speed-modifier" then
 			if type( v.modifier ) ~= "number" then
 				error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
