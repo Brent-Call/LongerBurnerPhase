@@ -11,6 +11,7 @@ require( "Prototypes.Recipes.Recipe" )
 require( "Prototypes.Recipes.Science" )
 require( "Prototypes.Technology.Technology" )
 require( "Prototypes.MilitarySupply_GUI_Style" )
+require( "Prototypes.Military_Supply_sprites" )
 --This mod adds 3 new achievements to complete!  Enjoy!
 require( "Prototypes.Achievement" )
 

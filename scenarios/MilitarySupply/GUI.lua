@@ -609,21 +609,21 @@ function choose_starter_package( player, packageChosen )
 					error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
 				end
 				--Else: valid.
-				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "sprite", sprite = "military-supply-worker-robot-speed-bonus", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-worker-robots-speed-modifier", 100 * v.modifier }})
 			elseif v.type == "manual-mining-speed-penalty" then
 				if type( v.modifier ) ~= "number" then
 					error( "Paramater \"modifier\" was invalid.  Number expected, got "..type( v.modifier ).."." )
 				end
 				--Else: valid.
-				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "sprite", sprite = "military-supply-manual-mining-penalty", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-manual-mining-speed-penalty", 100 * v.modifier }})
 			elseif v.type == "ghost-rebuild-timeout" then
 				if type( v.hoursToTimeout ) ~= "number" then
 					error( "Paramater \"hoursToTimeout\" was invalid.  Number expected, got "..type( v.hoursToTimeout ).."." )
 				end
 				--Else: valid.
-				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "sprite", sprite = "military-supply-ghost-rebuild-timeout", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-ghost-rebuild-timeout", v.hoursToTimeout }})
 			else
 				error( "Parameter \"type\" was not one of the predefined valid values." )
