@@ -599,10 +599,10 @@ function choose_starter_package( player, packageChosen )
 				if type( v.multiplier ) ~= "number" then
 					error( "Paramater \"multiplier\" was invalid.  Number expected, got "..type( v.multiplier ).."." )
 				end
-				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "sprite", sprite = "military-supply-score-multiplier", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-score-multiplier", v.multiplier }})
 			elseif v.type == "richness-penalty" then
-				flow.add({ type = "sprite", sprite = "utility/questionmark", style = "tool_equip_equipment_image" })
+				flow.add({ type = "sprite", sprite = "military-supply-ore-richness-penalty", style = "tool_equip_equipment_image" })
 				flow.add({ type = "label", caption = { "military-supply-scenario-gui.starter-package-richness-penalty" }})
 			elseif v.type == "worker-robots-speed-modifier" then
 				if type( v.modifier ) ~= "number" then

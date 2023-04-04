@@ -28,12 +28,36 @@ data:extend({
 {
 	type = "sprite",
 	name = "military-supply-manual-mining-penalty",
-	filename = "__LongerBurnerPhase__/Graphics/Items/MilitarySupply/steel-axe.png",
+	filename = "__LongerBurnerPhase__/Graphics/Military_Supply_Icons/steel-axe.png",
 	size = 64,
 	flags = { "gui-icon" },
 	mipmap_count = 4,
 	tint = { r = 1, g = 0.5, b = 0.5, a = 1 },
 	scale = 0.5
+},
+{
+	type = "sprite",
+	name = "military-supply-score-multiplier",
+	filename = "__LongerBurnerPhase__/Graphics/Military_Supply_Icons/trophy.png",
+	size = 32,
+	flags = { "gui-icon" }
+},
+{
+	--This is a half-size version to be used for the richness penalty itself:
+	type = "sprite",
+	name = "military-supply-ore-richness-penalty",
+	filename = "__LongerBurnerPhase__/Graphics/Military_Supply_Icons/richness-penalty.png",
+	size = 64,
+	flags = { "gui-icon" },
+	scale = 0.5
+},
+{
+	--This full-size icon represents the richness penalty challenge:
+	type = "sprite",
+	name = "military-supply-richness-penalty-challenge",
+	filename = "__LongerBurnerPhase__/Graphics/Military_Supply_Icons/richness-penalty.png",
+	size = 64,
+	flags = { "gui-icon" }
 }
 })
 

@@ -580,7 +580,7 @@ function initialize_starter_packages()
 			localisedName = { "military-supply-scenario-gui.starter-package-richness-challenge" },
 			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-richness-challenge" },
 			isChallenge = true,
-			sprite = "utility/questionmark",
+			sprite = "military-supply-richness-penalty-challenge",
 			contents =
 			{
 				{ type = "item", item = "advanced-burner-mining-drill", count = 2 },
