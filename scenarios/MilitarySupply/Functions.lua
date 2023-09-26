@@ -479,6 +479,8 @@ end
 --	localisedName -- LocalisedString.  Displayed as the name of the starter package.
 --	messageWhenChosen -- LocalisedString.  Printed to the console when the starter package is chosen.
 --	isChallenge -- Boolean.  If true, the GUI warns the player that this starter package is more difficult than normal.
+--				Challenges are balanced for experienced players who understand the scenario's mechanics & secrets.
+--				Rather than just have a single hard mode, different starter packages can add difficulty in different ways.
 --	sprite -- SpritePath.  Image associated with this starter package.
 --	contents -- Table.  Array of the starter package item data structures.
 --A starter package item data structure has the following fields:
@@ -500,7 +502,7 @@ end
 --							a modifier to the movement speed of their construction & logistic robots.
 --			"manual-mining-speed-penalty" -- The player who chose this will get a penalty to manual mining speed.
 --							The bonus wears off when they die.
---			"ghost-rebuild-timeout" -- When the starter package is chosen, the pleyer's force gets a bonus
+--			"ghost-rebuild-timeout" -- When the starter package is chosen, the player's force gets a bonus
 --							where their entities that die create ghosts that last for a while.
 --	item -- String.  Name of the item prototype to use.  Used if type is "item".
 --	count -- Number.  Amount of items given.  Used if type is "item".
@@ -575,7 +577,7 @@ function initialize_starter_packages()
 				{ type = "ghost-rebuild-timeout", hoursToTimeout = 6 }
 			}
 		},
-		--Richness challenge starter package:
+		--Resource Richness Challenge, the starter package:
 		{
 			localisedName = { "military-supply-scenario-gui.starter-package-richness-challenge" },
 			messageWhenChosen = { "military-supply-scenario-thoughts.thoughts-choose-richness-challenge" },
@@ -584,7 +586,7 @@ function initialize_starter_packages()
 			contents =
 			{
 				{ type = "item", item = "advanced-burner-mining-drill", count = 2 },
-				{ type = "item", item = "steel-furnace", count = 10 },
+				{ type = "item", item = "steel-furnace", count = 15 },
 				{ type = "money-multiplier", multiplier = 0.5 },
 				{ type = "score-multiplier", multiplier = 4 },
 				{ type = "richness-penalty", multipliers =
