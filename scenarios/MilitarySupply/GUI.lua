@@ -459,7 +459,7 @@ function create_starter_package_GUI( player )
 
 		local flow = list.add({ type = "flow", name = "package-"..i, direction = "horizontal", style = "centering_horizontal_flow" })
 		flow.add({ type = "sprite-button", name = BUTTON_TO_SELECT_STARTER_PACKAGE..i, sprite = sp.sprite, style = "Q-LongerBurnerPhase:slot_button_64px" })
-		flow.add({ type = "label", name = "name-of-"..i, caption = sp.localisedName })
+		flow.add({ type = "label", name = "name-of-"..i, caption = sp.localisedName, style = "subheader_right_aligned_label" })
 	end
 
 	starterPackageGUI.add({ type = "frame", name = "preview", direction = "vertical", visible = false, style = "inside_shallow_frame_with_padding" })
